@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CriminalIntent</string>
+    <string name="add_item">Add item</string>
+    <string name="show_subtitle">SHOW SUBTITLE</string>
+    <string name="enter_crime_title">Enter crime title</string>
+    <string name="details">Details</string>
+    <string name="crime_text">Crime</string>
+    <string name="crime_title">Crime Title</string>
+    <string name="solved">Solved</string>
+    <string name="crimes_list">Crimes List</string>
+    <string name="crime_description">Crime Description</string>
+    <string name="enter_crime_description">Enter crime description</string>
+    <string name="image_settb">image settb</string>
+    <string name="suspect_name">Suspect Name</string>
+    <string name="enter_suspect_name">Enter suspect name</string>
+    <string name="list">List</string>
+</resources>
