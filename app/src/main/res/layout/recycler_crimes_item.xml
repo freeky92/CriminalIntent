@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
+    android:background="@drawable/stroke_rv_item_background"
     android:orientation="horizontal">
 
     <com.google.android.material.checkbox.MaterialCheckBox
