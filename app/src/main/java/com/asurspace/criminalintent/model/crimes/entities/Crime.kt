@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Crime(
     val id: Long?,
-    val solved: Boolean?,
+    val solved: Int?,
     val title: String?,
     val suspectName: String?,
     val desciption: String?,

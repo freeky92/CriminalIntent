@@ -37,10 +37,11 @@ class CrimesRecyclerAdapter(
 
         fun setCrime(crime: Crime) {
             this.crime = crime
-            binding.rvSolvedCb.isChecked = crime.solved ?: false
+            binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
             binding.crimeTitle.text = crime.title
             binding.suspectName.text = crime.suspectName
         }
+
 
         init {
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->

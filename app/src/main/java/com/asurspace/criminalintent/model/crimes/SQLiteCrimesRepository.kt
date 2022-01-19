@@ -2,11 +2,10 @@ package com.asurspace.criminalintent.model.crimes
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 
 class SQLiteCrimesRepository(
     private val db: SQLiteDatabase,
@@ -14,12 +13,12 @@ class SQLiteCrimesRepository(
 ) :
     CrimesRepository {
 
-    override suspend fun getAllCrimes(onlyActive: Boolean?): Flow<List<Crime>?> {
-        TODO()
+    override suspend fun getAllCrimes(onlyActive: Boolean?): List<Crime>? {
+        return queryCrimes(onlyActive)
     }
 
-    override suspend fun getCrimeByIdF(crimeId: Long): Flow<Crime?> {
-        TODO()
+    override suspend fun getCrimeByIdF(crimeId: Long): Crime? {
+        return getCrimeById(crimeId)
     }
 
     override suspend fun addCrime(crime: Crime) {
@@ -38,15 +37,19 @@ class SQLiteCrimesRepository(
         TODO("Not yet implemented")
     }
 
-    private fun queryCrimes(onlyActive: Boolean): List<Crime> {
-        val cursor = cursorCrimes(onlyActive)
+    private fun queryCrimes(onlyActive: Boolean?): List<Crime>? {
+        val cursor = cursorCrimes(onlyActive == true)
 
-        return cursor.use {
-            val list = mutableListOf<Crime>()
-            while (cursor.moveToNext()) {
-                list.add(parseCrime(cursor))
+        return if (cursor.count == 0) {
+            return null
+        } else {
+            cursor.use {
+                val list = mutableListOf<Crime>()
+                while (cursor.moveToNext()) {
+                    list.add(parseCrime(cursor))
+                }
+                return@use list
             }
-            return@use list
         }
     }
 
@@ -64,7 +67,7 @@ class SQLiteCrimesRepository(
                 null,
                 null, null, null
             )
-            //return db.rawQuery("SELECT * FROM ${BoxesTable.TABLE_NAME}", null)
+            //return db.rawQuery("SELECT * FROM ${CrimesTable.TABLE_NAME}", null)
         }
     }
 
@@ -97,7 +100,7 @@ class SQLiteCrimesRepository(
     private fun parseCrime(cursor: Cursor): Crime {
         return Crime(
             id = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_ID)),
-            solved = cursor.getInt(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SOLVED)) == 1,
+            solved = cursor.getInt(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SOLVED)),
             title = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_TITLE)),
             suspectName = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SUSPECT)),
             desciption = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_DESCRIPTION)),
@@ -106,5 +109,9 @@ class SQLiteCrimesRepository(
         )
     }
 
+
+}
+
+class CrimeId(val crimeId: Long) {
 
 }

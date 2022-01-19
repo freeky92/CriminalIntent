@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.*
 
 interface CrimesRepository {
 
-    suspend fun getAllCrimes(onlyActive: Boolean?): Flow<List<Crime>?>
+    suspend fun getAllCrimes(onlyActive: Boolean?): List<Crime>?
 
-    suspend fun getCrimeByIdF(crimeId: Long): Flow<Crime?>
+    suspend fun getCrimeByIdF(crimeId: Long): Crime?
 
     suspend fun addCrime(crime: Crime)
 
