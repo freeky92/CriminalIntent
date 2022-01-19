@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class AppSQLiteHelper(
     private val applicationContext: Context
-) : SQLiteOpenHelper(applicationContext, "crime_db", null, 1) {
+) : SQLiteOpenHelper(applicationContext, "crimes.db", null, 1) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         val sql = applicationContext.assets.open("crime_db_init.sql").bufferedReader().use {

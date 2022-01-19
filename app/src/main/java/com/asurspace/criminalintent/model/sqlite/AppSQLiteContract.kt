@@ -11,7 +11,7 @@ object AppSQLiteContract {
         const val COLUMN_SUSPECT = "suspect"
         const val COLUMN_DESCRIPTION = "description"
         const val COLUMN_CREATION_DATE = "creation_date"
-
+        const val COLUMN_IMAGE_URI = "image_uri"
     }
 
 }

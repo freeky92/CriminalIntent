@@ -1,4 +1,4 @@
-package com.asurspace.criminalintent.util
+package com.asurspace.criminalintent
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

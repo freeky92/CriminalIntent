@@ -12,7 +12,7 @@ data class Crime(
     val suspectName: String?,
     val desciption: String?,
     val creation_date: Long?,
-    val imageURI: Uri?,
+    val imageURI: String?,
 ) : Parcelable {
     companion object {
         const val UNKNOWN_CREATION_DATE = 0L

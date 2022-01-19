@@ -14,8 +14,6 @@ import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
-import com.asurspace.criminalintent.util.FragmentNameList
-import com.asurspace.criminalintent.util.Repository
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {

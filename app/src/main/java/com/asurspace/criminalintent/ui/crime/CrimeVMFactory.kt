@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 
+
 class CrimeVMFactory(owner: SavedStateRegistryOwner) :
     AbstractSavedStateViewModelFactory(owner, null) {
     override fun <T : ViewModel?> create(

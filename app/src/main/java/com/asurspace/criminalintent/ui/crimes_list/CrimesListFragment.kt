@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.FragmentNameList
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
+import com.asurspace.criminalintent.RESULT
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
@@ -51,12 +53,15 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     }
 
     private fun subscribeOnLiveData() {
+
         viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
+                setFragmentResult(FragmentNameList.CRIME_FRAGMENT, bundleOf(RESULT to crime.id))
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
         })
+
     }
 
     override fun onResume() {
