@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="app_backGR">#B6AAAA</color>
 
     <color name="pb_card_view_background">#CC2E3946</color>
     <color name="pb_loading_text_color">#5DFAEA</color>

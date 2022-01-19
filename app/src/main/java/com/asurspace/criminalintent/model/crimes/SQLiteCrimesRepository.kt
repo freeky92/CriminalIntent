@@ -2,10 +2,10 @@ package com.asurspace.criminalintent.model.crimes
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 
 class SQLiteCrimesRepository(
     private val db: SQLiteDatabase,
@@ -14,11 +14,15 @@ class SQLiteCrimesRepository(
     CrimesRepository {
 
     override suspend fun getAllCrimes(onlyActive: Boolean?): List<Crime>? {
-        return queryCrimes(onlyActive)
+        val list = queryCrimes(onlyActive)
+        delay(500)
+        return list
     }
 
     override suspend fun getCrimeByIdF(crimeId: Long): Crime? {
-        return getCrimeById(crimeId)
+        val crime = getCrimeById(crimeId)
+        delay(500)
+        return crime
     }
 
     override suspend fun addCrime(crime: Crime) {
