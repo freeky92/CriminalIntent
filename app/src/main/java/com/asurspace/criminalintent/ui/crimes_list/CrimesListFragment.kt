@@ -19,7 +19,7 @@ import com.asurspace.criminalintent.ui.crime.CrimeFragment
 
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
-    private val viewModel by viewModels<CrimesListViewModel>()
+    private val viewModel by viewModels<CrimesListVM>()
 
     private var _binding: CrimesListFragmentBinding? = null
 

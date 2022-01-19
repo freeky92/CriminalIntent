@@ -19,6 +19,7 @@ class Event<T>(
 object FragmentNameList {
     const val CRIMES_LIST_FRAGMENT = "CrimesListFragment"
     const val CRIME_FRAGMENT = "CrimeFragment"
+    const val CREATE_CRIME_FRAGMENT = "CreateCrimeFragment"
 }
 
 // --- helper methods / aliases

@@ -9,7 +9,7 @@ import com.asurspace.criminalintent.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrimesListViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(),
+class CrimesListVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
     LifecycleEventObserver {
 
     private val crimeDB: CrimesRepository = Repository.crimesRepo
@@ -23,7 +23,6 @@ class CrimesListViewModel(private val savedStateHandle: SavedStateHandle) : View
 
     init {
         getCrimeList()
-
     }
 
     private fun getCrimeList() {

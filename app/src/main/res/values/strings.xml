@@ -8,10 +8,12 @@
     <string name="crime_title">Crime Title</string>
     <string name="solved">Solved</string>
     <string name="crimes_list">Crimes List</string>
+    <string name="create_crime">Create crime</string>
     <string name="crime_description">Crime Description</string>
     <string name="enter_crime_description">Enter crime description</string>
     <string name="image_settb">image settb</string>
     <string name="suspect_name">Suspect Name</string>
     <string name="enter_suspect_name">Enter suspect name</string>
     <string name="list">List</string>
+    <string name="msg_crime_created">Crime created!</string>
 </resources>

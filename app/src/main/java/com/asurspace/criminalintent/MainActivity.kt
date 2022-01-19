@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
-import com.asurspace.criminalintent.ui.crime.CrimeFragment
+import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
 import com.google.android.material.snackbar.Snackbar
 
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_add -> {
-            openFragment(CrimeFragment())
+            openFragment(CreateCrimeFragment())
             true
         }
 
@@ -137,20 +137,28 @@ class MainActivity : AppCompatActivity() {
 
             when (bundle.get(NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY) as String) {
 
-                // on crime fragment
-                FragmentNameList.CRIME_FRAGMENT -> {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                    supportActionBar?.title = resources.getString(R.string.crime_text)
-                    addItem.isVisible = false
-                    showSubtitle.isVisible = false
-                }
-
                 // on crimes list fragment
                 FragmentNameList.CRIMES_LIST_FRAGMENT -> {
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     supportActionBar?.title = resources.getString(R.string.crimes_list)
                     addItem.isVisible = true
                     showSubtitle.isVisible = true
+                }
+
+                // on crime fragment
+                FragmentNameList.CRIME_FRAGMENT -> {
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.title = resources.getString(R.string.crime_text)
+                    addItem.isVisible = true
+                    showSubtitle.isVisible = false
+                }
+
+                // on crimes list fragment
+                FragmentNameList.CREATE_CRIME_FRAGMENT -> {
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.title = resources.getString(R.string.create_crime)
+                    addItem.isVisible = false
+                    showSubtitle.isVisible = false
                 }
 
                 else -> {

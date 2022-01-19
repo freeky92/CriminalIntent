@@ -1,4 +1,4 @@
-package com.asurspace.criminalintent.ui.crime
+package com.asurspace.criminalintent.ui.create_crime
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,36 +7,24 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.FragmentNameList
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
-import com.asurspace.criminalintent.dateFormat
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
-import java.util.*
+import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 
-class CrimeFragment : Fragment(R.layout.crime_fragment) {
+class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
-    private val viewModel by viewModels<CrimeVM>()
+    private val viewModel by viewModels<CreateCrimeVM>()
 
-    private var _binding: CrimeFragmentBinding? = null
+    private var _binding: CreateCrimeFragmentBinding? = null
 
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        getCrimeIdFromList()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = CrimeFragmentBinding.inflate(inflater, container, false)
-
-        binding.updateTb.text = dateFormat.format(Date())
+        _binding = CreateCrimeFragmentBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -50,9 +38,9 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     }
 
     private fun restoreValue() {
-        binding.crimeTitleInput.editText?.setText(viewModel.changedCrimeLD.value?.title ?: "")
-        binding.crimeSuspectNameInput.editText?.setText(viewModel.changedCrimeLD.value?.suspectName ?: "")
-        binding.crimeDescriptionInput.editText?.setText(viewModel.changedCrimeLD.value?.desciption ?: "")
+        binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value ?: "")
+        binding.crimeSuspectNameInput.editText?.setText(viewModel.suspectLD.value ?: "")
+        binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value ?: "")
     }
 
     private fun listenerInitialization() {
@@ -67,37 +55,24 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             viewModel.setUpdatedDescription(it.toString())
         }
 
-        binding.checkboxSolved.setOnCheckedChangeListener { _, b ->
-            viewModel.setSolvedState(b)
-        }
-
-        binding.updateTb.setOnClickListener {
-            viewModel.update()
+        binding.createPlusDateTb.setOnClickListener {
+            viewModel.addCrime()
             (activity as MainActivity).showSnackBar(resources.getString(R.string.msg_crime_created))
         }
 
-    }
 
+    }
 
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CRIME_FRAGMENT)
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CREATE_CRIME_FRAGMENT)
         )
-    }
-
-    private fun getCrimeIdFromList() {
-        setFragmentResultListener(FragmentNameList.CRIME_FRAGMENT) { _, bundle ->
-            // Any type can be passed via to the bundle
-            val result = bundle.getLong(CrimesTable.COLUMN_ID)
-            viewModel.setCrimeOnVM(result)
-        }
     }
 
     override fun onResume() {
         super.onResume()
         fragmentResumeResult()
-        getCrimeIdFromList()
     }
 
     override fun onDestroyView() {

@@ -133,7 +133,7 @@
         app:layout_constraintTop_toBottomOf="@+id/crime_description_input" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_tb"
+        android:id="@+id/create_plus_date_tb"
         style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -147,17 +147,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_title_tv1"
         tools:ignore="TextContrastCheck"
-        tools:text="16:09:22 WED 17.01.2022" />
-
-    <CheckBox
-        android:id="@+id/checkbox_solved"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/solved"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/update_tb" />
-
+        android:text="@string/create_crime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
