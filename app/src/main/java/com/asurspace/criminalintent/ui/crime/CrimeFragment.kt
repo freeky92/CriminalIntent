@@ -49,13 +49,14 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private fun restoreValue() {
         binding.updateTb.text = resources.getString(R.string.date)
-            .plus(dateFormat.format(Date(viewModel.changedCrimeLD.value?.creation_date ?: 0)))
-        binding.crimeTitleInput.editText?.setText(viewModel.changedCrimeLD.value?.title ?: "")
+            .plus(dateFormat.format(Date(viewModel.crimeLD.value?.creation_date ?: 0)))
+
+        binding.crimeTitleInput.editText?.setText(viewModel.crimeLD.value?.title ?: "")
         binding.crimeSuspectNameInput.editText?.setText(
-            viewModel.changedCrimeLD.value?.suspectName ?: ""
+            viewModel.crimeLD.value?.suspectName ?: ""
         )
         binding.crimeDescriptionInput.editText?.setText(
-            viewModel.changedCrimeLD.value?.desciption ?: ""
+            viewModel.crimeLD.value?.desciption ?: ""
         )
     }
 

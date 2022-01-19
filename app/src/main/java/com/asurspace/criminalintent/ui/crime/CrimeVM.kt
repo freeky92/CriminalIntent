@@ -20,28 +20,30 @@ class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
     private val _crimeIdLD = savedStateHandle.getLiveData<Long>(CrimesTable.COLUMN_ID)
     val crimeIdLD = _crimeIdLD.share()
 
-    private val crimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
-
-    private val _changedCrimeLD = savedStateHandle.getLiveData<Crime>(CHANGED_CRIME)
-    val changedCrimeLD = _changedCrimeLD.share()
+    private val _crimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
+    val crimeLD = _crimeLD.share()
 
     private val _onCheckBoxOnLD = savedStateHandle.getLiveData<Int>(CrimesTable.COLUMN_SOLVED)
     val onCheckBoxOn = _onCheckBoxOnLD.share()
+
+    init {
+
+    }
 
     fun setCrimeOnVM(crimeId: Long) {
         Log.i("VM setCrime", crimeId.toString())
         if (crimeLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
-                crimeLD.postValue(crimeDB.findCrimeByIdVMS(crimeId))
+                _crimeLD.postValue(crimeDB.findCrimeByIdVMS(crimeId))
             }
         }
     }
 
     fun update() {
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.updateCrime(crimeIdLD.value, changedCrimeLD.value)
+            crimeDB.updateCrime(crimeIdLD.value, crimeLD.value)
         }
-        TODO("Not yet implemented")
+
     }
 
     fun setSolvedState(state: Boolean) {
@@ -77,32 +79,28 @@ class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
 
     private fun onAnyDataUpdated(argNumber: Int, argS: String? = null, argI: Int? = null) {
 
-        val crime = if (changedCrimeLD.value == null) {
-            crimeLD.value?.toMutableCrime()
-        } else {
-            changedCrimeLD.value?.toMutableCrime()
-        }
+        val crime = crimeLD.value?.toMutableCrime()
 
         when (argNumber) {
             1 -> {
                 crime?.solved = argI
-                _changedCrimeLD.value = crime?.toCrime()
+                _crimeLD.value = crime?.toCrime()
             }
             2 -> {
                 crime?.title = argS
-                _changedCrimeLD.value = crime?.toCrime()
+                _crimeLD.value = crime?.toCrime()
             }
             3 -> {
                 crime?.suspectName = argS
-                _changedCrimeLD.value = crime?.toCrime()
+                _crimeLD.value = crime?.toCrime()
             }
             4 -> {
                 crime?.desciption = argS
-                _changedCrimeLD.value = crime?.toCrime()
+                _crimeLD.value = crime?.toCrime()
             }
             5 -> {
                 crime?.imageURI = argS
-                _changedCrimeLD.value = crime?.toCrime()
+                _crimeLD.value = crime?.toCrime()
             }
 
         }
