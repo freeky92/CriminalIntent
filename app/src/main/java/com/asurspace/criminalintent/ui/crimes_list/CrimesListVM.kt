@@ -29,7 +29,7 @@ class CrimesListVM(private val savedStateHandle: SavedStateHandle) : ViewModel()
         if (crimeListLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
                 val list = crimeDB.getAllCrimes(false)
-                _crimeListLD.postValue(list)
+                _crimeListLD.postValue(list?.reversed())
             }
         }
     }

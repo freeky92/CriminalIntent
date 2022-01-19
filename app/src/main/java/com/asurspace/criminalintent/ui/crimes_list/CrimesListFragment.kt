@@ -1,6 +1,7 @@
 package com.asurspace.criminalintent.ui.crimes_list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.FragmentNameList
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.RESULT
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
+import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
 
@@ -56,7 +57,11 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
         viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
-                setFragmentResult(FragmentNameList.CRIME_FRAGMENT, bundleOf(RESULT to crime.id))
+                val i = Log.i("RV take CID", crime.id.toString())
+                setFragmentResult(
+                    FragmentNameList.CRIME_FRAGMENT,
+                    bundleOf(CrimesTable.COLUMN_ID to crime.id)
+                )
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter

@@ -16,4 +16,5 @@
     <string name="enter_suspect_name">Enter suspect name</string>
     <string name="list">List</string>
     <string name="msg_crime_created">Crime created!</string>
+    <string name="date">Update.\nCreation date:\s</string>
 </resources>

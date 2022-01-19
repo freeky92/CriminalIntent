@@ -1,6 +1,8 @@
 package com.asurspace.criminalintent.ui.crime
 
+import android.util.Log
 import androidx.lifecycle.*
+import com.asurspace.criminalintent.CHANGED_CRIME
 import com.asurspace.criminalintent.CRIME
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
@@ -18,57 +20,150 @@ class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
     private val _crimeIdLD = savedStateHandle.getLiveData<Long>(CrimesTable.COLUMN_ID)
     val crimeIdLD = _crimeIdLD.share()
 
-    private val _crimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
-    val crimeLD = _crimeLD.share()
+    private val crimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
 
-    private val _changedCrimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
+    private val _changedCrimeLD = savedStateHandle.getLiveData<Crime>(CHANGED_CRIME)
     val changedCrimeLD = _changedCrimeLD.share()
 
-
-
-    private val _onSolvedStateLD = savedStateHandle.getLiveData<Boolean>(CrimesTable.COLUMN_SOLVED)
-    val onCheckBoxOn = _onSolvedStateLD.share()
+    private val _onCheckBoxOnLD = savedStateHandle.getLiveData<Int>(CrimesTable.COLUMN_SOLVED)
+    val onCheckBoxOn = _onCheckBoxOnLD.share()
 
     fun setCrimeOnVM(crimeId: Long) {
+        Log.i("VM setCrime", crimeId.toString())
         if (crimeLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
-                _crimeLD.postValue(crimeDB.getCrimeByIdVMS(crimeId))
+                crimeLD.postValue(crimeDB.findCrimeByIdVMS(crimeId))
             }
         }
     }
 
     fun update() {
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.updateCrime(crimeIdLD.value ?: , )
+            crimeDB.updateCrime(crimeIdLD.value, changedCrimeLD.value)
         }
         TODO("Not yet implemented")
     }
 
     fun setSolvedState(state: Boolean) {
-        if (_onSolvedStateLD.value != state) {
-            _onSolvedStateLD.value = state
+        val digit = if (state) {
+            1
+        } else {
+            0
         }
-    }
 
+        if (_onCheckBoxOnLD.value != digit) {
+            _onCheckBoxOnLD.value = digit
+        }
+
+        onAnyDataUpdated(1, argI = digit)
+    }
 
 
     fun setUpdatedTitle(title: String?) {
-
-        TODO("Not yet implemented")
+        onAnyDataUpdated(2, argS = title)
     }
 
     fun setUpdatedSuspect(suspect: String?) {
-
-        TODO("Not yet implemented")
+        onAnyDataUpdated(3, argS = suspect)
     }
 
     fun setUpdatedDescription(description: String?) {
-
-        TODO("Not yet implemented")
+        onAnyDataUpdated(4, argS = description)
     }
 
-    fun onAnyDataUpdated(){
-        changedCrimeLD
+    fun setUpdatedImage(uri: String?) {
+        onAnyDataUpdated(5, argS = uri)
+    }
+
+    private fun onAnyDataUpdated(argNumber: Int, argS: String? = null, argI: Int? = null) {
+
+        val crime = if (changedCrimeLD.value == null) {
+            crimeLD.value?.toMutableCrime()
+        } else {
+            changedCrimeLD.value?.toMutableCrime()
+        }
+
+        when (argNumber) {
+            1 -> {
+                crime?.solved = argI
+                _changedCrimeLD.value = crime?.toCrime()
+            }
+            2 -> {
+                crime?.title = argS
+                _changedCrimeLD.value = crime?.toCrime()
+            }
+            3 -> {
+                crime?.suspectName = argS
+                _changedCrimeLD.value = crime?.toCrime()
+            }
+            4 -> {
+                crime?.desciption = argS
+                _changedCrimeLD.value = crime?.toCrime()
+            }
+            5 -> {
+                crime?.imageURI = argS
+                _changedCrimeLD.value = crime?.toCrime()
+            }
+
+        }
+
+        /*when (argNumber) {
+            1 -> {
+                _changedCrimeLD.value = Crime(
+                    id = crime?.id,
+                    solved = argI,
+                    title = crime?.title,
+                    suspectName = crime?.suspectName,
+                    desciption = crime?.desciption,
+                    creation_date = crime?.creation_date,
+                    imageURI = crime?.imageURI,
+                )
+            }
+            2 -> {
+                _changedCrimeLD.value = Crime(
+                    id = crime?.id,
+                    solved = crime?.solved,
+                    title = argS,
+                    suspectName = crime?.suspectName,
+                    desciption = crime?.desciption,
+                    creation_date = crime?.creation_date,
+                    imageURI = crime?.imageURI,
+                )
+            }
+            3 -> {
+                _changedCrimeLD.value = Crime(
+                    id = crime?.id,
+                    solved = crime?.solved,
+                    title = crime?.title,
+                    suspectName = argS,
+                    desciption = crime?.desciption,
+                    creation_date = crime?.creation_date,
+                    imageURI = crime?.imageURI,
+                )
+            }
+            4 -> {
+                _changedCrimeLD.value = Crime(
+                    id = crime?.id,
+                    solved = crime?.solved,
+                    title = crime?.title,
+                    suspectName = crime?.suspectName,
+                    desciption = argS,
+                    creation_date = crime?.creation_date,
+                    imageURI = crime?.imageURI,
+                )
+            }
+            5 -> {
+                _changedCrimeLD.value = Crime(
+                    id = crime?.id,
+                    solved = crime?.solved,
+                    title = crime?.title,
+                    suspectName = crime?.suspectName,
+                    desciption = crime?.desciption,
+                    creation_date = crime?.creation_date,
+                    imageURI = argS,
+                )
+            }
+        }*/
 
     }
 

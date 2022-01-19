@@ -15,19 +15,19 @@ class SQLiteCrimesRepository(
         return queryCrimes(onlyActive)
     }
 
-    override suspend fun getCrimeByIdVMS(crimeId: Long): Crime? {
+    override suspend fun findCrimeByIdVMS(crimeId: Long): Crime? {
         return getCrimeById(crimeId)
     }
 
-    override suspend fun addCrime(crime: Crime) {
+    override suspend fun addCrime(crime: Crime?) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateCrime(crimeId: Long, pair: Pair<String, Any>) {
+    override suspend fun updateCrime(crimeId: Long?, crime: Crime?) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteCrime(crimeId: Long): Int? {
+    override suspend fun deleteCrime(crimeId: Long?): Int? {
         TODO("Not yet implemented")
     }
 

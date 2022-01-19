@@ -34,3 +34,4 @@ val dateFormat = SimpleDateFormat("HH:mm:ss EEEE dd.MM.yyyy ", Locale.getDefault
 
 const val RESULT = "RESULT"
 const val CRIME = "CRIME"
+const val CHANGED_CRIME = "CHANGED_CRIME"

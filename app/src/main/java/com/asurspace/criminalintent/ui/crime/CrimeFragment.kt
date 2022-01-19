@@ -1,6 +1,7 @@
 package com.asurspace.criminalintent.ui.crime
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,23 +37,26 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     ): View {
         _binding = CrimeFragmentBinding.inflate(inflater, container, false)
 
-        binding.updateTb.text = dateFormat.format(Date())
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         restoreValue()
         listenerInitialization()
     }
 
     private fun restoreValue() {
+        binding.updateTb.text = resources.getString(R.string.date)
+            .plus(dateFormat.format(Date(viewModel.changedCrimeLD.value?.creation_date ?: 0)))
         binding.crimeTitleInput.editText?.setText(viewModel.changedCrimeLD.value?.title ?: "")
-        binding.crimeSuspectNameInput.editText?.setText(viewModel.changedCrimeLD.value?.suspectName ?: "")
-        binding.crimeDescriptionInput.editText?.setText(viewModel.changedCrimeLD.value?.desciption ?: "")
+        binding.crimeSuspectNameInput.editText?.setText(
+            viewModel.changedCrimeLD.value?.suspectName ?: ""
+        )
+        binding.crimeDescriptionInput.editText?.setText(
+            viewModel.changedCrimeLD.value?.desciption ?: ""
+        )
     }
 
     private fun listenerInitialization() {
@@ -90,6 +94,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         setFragmentResultListener(FragmentNameList.CRIME_FRAGMENT) { _, bundle ->
             // Any type can be passed via to the bundle
             val result = bundle.getLong(CrimesTable.COLUMN_ID)
+            Log.i("bundle RESULT", result.toString())
             viewModel.setCrimeOnVM(result)
         }
     }
