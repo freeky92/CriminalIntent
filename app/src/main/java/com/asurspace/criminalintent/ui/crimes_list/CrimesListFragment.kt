@@ -7,20 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.asurspace.criminalintent.FragmentNameList
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
+import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
+import com.asurspace.criminalintent.model.SharedVM
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
+import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.viewModelCreator
 
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
-    private val viewModel by viewModels<CrimesListVM>()
+    private val sharedViewModel by activityViewModels<SharedVM>()
+    private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
 
     private var _binding: CrimesListFragmentBinding? = null
 
@@ -38,6 +41,8 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        lifecycle.addObserver(viewModel)
 
         listenerInitialization()
         subscribeOnLiveData()
@@ -57,11 +62,8 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
         viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
-                val i = Log.i("RV take CID", crime.id.toString())
-                setFragmentResult(
-                    FragmentNameList.CRIME_FRAGMENT,
-                    bundleOf(CrimesTable.COLUMN_ID to crime.id)
-                )
+                sharedViewModel.setCrimeId(crime.id)
+
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
@@ -72,11 +74,21 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     override fun onResume() {
         super.onResume()
         fragmentResumeResult()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        Log.i("onPause", "")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.i("onStop", "")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i("onDESTROY", "")
         _binding = null
     }
 

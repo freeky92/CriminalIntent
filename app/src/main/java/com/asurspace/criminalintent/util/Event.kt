@@ -1,4 +1,4 @@
-package com.asurspace.criminalintent
+package com.asurspace.criminalintent.util
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData

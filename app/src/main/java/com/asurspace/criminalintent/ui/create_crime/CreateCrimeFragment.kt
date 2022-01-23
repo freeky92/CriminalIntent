@@ -8,10 +8,12 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.asurspace.criminalintent.FragmentNameList
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
+import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.dateFormat
+import java.util.*
 
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
@@ -38,9 +40,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
     }
 
     private fun restoreValue() {
-        binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value ?: "")
-        binding.crimeSuspectNameInput.editText?.setText(viewModel.suspectLD.value ?: "")
-        binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value ?: "")
+        binding.buttonTitleTv1.text = dateFormat.format(Date())
     }
 
     private fun listenerInitialization() {
@@ -57,7 +57,10 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
         binding.createPlusDateTb.setOnClickListener {
             viewModel.addCrime()
-            (activity as MainActivity).showSnackBar(resources.getString(R.string.msg_crime_created))
+            with(activity as MainActivity) {
+                showSnackBar(resources.getString(R.string.msg_crime_created))
+                onBackPressed()
+            }
         }
 
 

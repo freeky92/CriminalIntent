@@ -2,36 +2,22 @@ package com.asurspace.criminalintent.ui.crime
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.CHANGED_CRIME
-import com.asurspace.criminalintent.CRIME
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
-import com.asurspace.criminalintent.share
+import com.asurspace.criminalintent.model.crimes.entities.MutableCrime
+import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
+class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) : ViewModel(),
     LifecycleEventObserver {
 
-    private val crimeDB: CrimesRepository = Repository.crimesRepo
+    private var updatedCrime: MutableCrime? = null
 
-    private val _crimeIdLD = savedStateHandle.getLiveData<Long>(CrimesTable.COLUMN_ID)
-    val crimeIdLD = _crimeIdLD.share()
-
-    private val _crimeLD = savedStateHandle.getLiveData<Crime>(CRIME)
+    private val _crimeLD = MutableLiveData<Crime>()
     val crimeLD = _crimeLD.share()
 
-    private val _onCheckBoxOnLD = savedStateHandle.getLiveData<Int>(CrimesTable.COLUMN_SOLVED)
-    val onCheckBoxOn = _onCheckBoxOnLD.share()
-
-    init {
-
-    }
-
-    fun setCrimeOnVM(crimeId: Long) {
-        Log.i("VM setCrime", crimeId.toString())
+    private fun getCrime(crimeId: Long) {
         if (crimeLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
                 _crimeLD.postValue(crimeDB.findCrimeByIdVMS(crimeId))
@@ -40,8 +26,9 @@ class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
     }
 
     fun update() {
+        setChanges()
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.updateCrime(crimeIdLD.value, crimeLD.value)
+            crimeDB.updateCrime(crimeId, crimeLD.value)
         }
 
     }
@@ -53,150 +40,88 @@ class CrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
             0
         }
 
-        if (_onCheckBoxOnLD.value != digit) {
-            _onCheckBoxOnLD.value = digit
+        if (crimeLD.value?.solved != digit) {
+            onAnyDataUpdated(1, argI = digit)
         }
 
-        onAnyDataUpdated(1, argI = digit)
     }
 
-
     fun setUpdatedTitle(title: String?) {
-        onAnyDataUpdated(2, argS = title)
+        if (crimeLD.value?.title != title) {
+            onAnyDataUpdated(2, argS = title)
+            Log.i("estUpDatedTilte", crimeLD.value?.title.toString())
+        }
     }
 
     fun setUpdatedSuspect(suspect: String?) {
-        onAnyDataUpdated(3, argS = suspect)
+        if (crimeLD.value?.suspect != suspect) {
+            onAnyDataUpdated(3, argS = suspect)
+            Log.i("estUpDatedSuspect", crimeLD.value?.title.toString())
+        }
     }
 
     fun setUpdatedDescription(description: String?) {
-        onAnyDataUpdated(4, argS = description)
+        if (crimeLD.value?.desciption != description) {
+            onAnyDataUpdated(4, argS = description)
+        }
     }
 
     fun setUpdatedImage(uri: String?) {
-        onAnyDataUpdated(5, argS = uri)
+        if (crimeLD.value?.imageURI != uri) {
+            onAnyDataUpdated(5, argS = uri)
+        }
     }
 
     private fun onAnyDataUpdated(argNumber: Int, argS: String? = null, argI: Int? = null) {
 
-        val crime = crimeLD.value?.toMutableCrime()
+        updatedCrime = crimeLD.value?.toMutableCrime()
 
         when (argNumber) {
             1 -> {
-                crime?.solved = argI
-                _crimeLD.value = crime?.toCrime()
+                updatedCrime?.solved = argI
             }
             2 -> {
-                crime?.title = argS
-                _crimeLD.value = crime?.toCrime()
+                updatedCrime?.title = argS
             }
             3 -> {
-                crime?.suspectName = argS
-                _crimeLD.value = crime?.toCrime()
+                updatedCrime?.suspect = argS
             }
             4 -> {
-                crime?.desciption = argS
-                _crimeLD.value = crime?.toCrime()
+                updatedCrime?.desciption = argS
             }
             5 -> {
-                crime?.imageURI = argS
-                _crimeLD.value = crime?.toCrime()
+                updatedCrime?.imageURI = argS
             }
-
         }
-
-        /*when (argNumber) {
-            1 -> {
-                _changedCrimeLD.value = Crime(
-                    id = crime?.id,
-                    solved = argI,
-                    title = crime?.title,
-                    suspectName = crime?.suspectName,
-                    desciption = crime?.desciption,
-                    creation_date = crime?.creation_date,
-                    imageURI = crime?.imageURI,
-                )
-            }
-            2 -> {
-                _changedCrimeLD.value = Crime(
-                    id = crime?.id,
-                    solved = crime?.solved,
-                    title = argS,
-                    suspectName = crime?.suspectName,
-                    desciption = crime?.desciption,
-                    creation_date = crime?.creation_date,
-                    imageURI = crime?.imageURI,
-                )
-            }
-            3 -> {
-                _changedCrimeLD.value = Crime(
-                    id = crime?.id,
-                    solved = crime?.solved,
-                    title = crime?.title,
-                    suspectName = argS,
-                    desciption = crime?.desciption,
-                    creation_date = crime?.creation_date,
-                    imageURI = crime?.imageURI,
-                )
-            }
-            4 -> {
-                _changedCrimeLD.value = Crime(
-                    id = crime?.id,
-                    solved = crime?.solved,
-                    title = crime?.title,
-                    suspectName = crime?.suspectName,
-                    desciption = argS,
-                    creation_date = crime?.creation_date,
-                    imageURI = crime?.imageURI,
-                )
-            }
-            5 -> {
-                _changedCrimeLD.value = Crime(
-                    id = crime?.id,
-                    solved = crime?.solved,
-                    title = crime?.title,
-                    suspectName = crime?.suspectName,
-                    desciption = crime?.desciption,
-                    creation_date = crime?.creation_date,
-                    imageURI = argS,
-                )
-            }
-        }*/
 
     }
 
-    private fun initSSH() {
-        TODO()
-        /*if (!savedStateHandle.contains(CrimesTable.COLUMN_TITLE)
-            || savedStateHandle.get<String>(CrimesTable.COLUMN_TITLE) != titleLD.value
-        ) {
-            savedStateHandle.set(CrimesTable.COLUMN_TITLE, titleLD.value)
-        }
-
-        if (!savedStateHandle.contains(CrimesTable.COLUMN_SUSPECT)
-            || savedStateHandle.get<String>(CrimesTable.COLUMN_SUSPECT) != suspectLD.value
-        ) {
-            savedStateHandle.set(CrimesTable.COLUMN_SUSPECT, suspectLD.value)
-        }
-
-        if (!savedStateHandle.contains(CrimesTable.COLUMN_DESCRIPTION)
-            || savedStateHandle.get<String>(CrimesTable.COLUMN_DESCRIPTION) != descriptionLD.value
-        ) {
-            savedStateHandle.set(CrimesTable.COLUMN_DESCRIPTION, descriptionLD.value)
-        }*/
+    private fun setChanges() {
+        _crimeLD.value = updatedCrime?.toCrime()
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
-
+                getCrime(crimeId)
+                Log.i("ON_CREATE", crimeLD.value?.title.toString())
             }
-            Lifecycle.Event.ON_START -> {}
-            Lifecycle.Event.ON_RESUME -> {}
-            Lifecycle.Event.ON_PAUSE -> {}
-            Lifecycle.Event.ON_STOP -> {}
+            Lifecycle.Event.ON_START -> {
+                Log.i("ON_START", crimeLD.value?.title.toString())
+            }
+            Lifecycle.Event.ON_RESUME -> {
+                Log.i("ON_RESUME", crimeLD.value?.title.toString())
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+
+                Log.i("ON_RESUME", crimeLD.value?.title.toString())
+            }
+            Lifecycle.Event.ON_STOP -> {
+                Log.i("ON_RESUME", crimeLD.value?.title.toString())
+            }
             Lifecycle.Event.ON_DESTROY -> {
-                initSSH()
+                setChanges()
+                Log.i("ON_RESUME", crimeLD.value?.title.toString())
             }
             Lifecycle.Event.ON_ANY -> {}
         }

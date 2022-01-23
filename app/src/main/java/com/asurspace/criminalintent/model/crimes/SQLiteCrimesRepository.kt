@@ -1,7 +1,11 @@
 package com.asurspace.criminalintent.model.crimes
 
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
+import android.util.Log
+import androidx.core.content.contentValuesOf
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
 import kotlinx.coroutines.CoroutineDispatcher
@@ -11,37 +15,48 @@ class SQLiteCrimesRepository(
     private val ioDispatcher: CoroutineDispatcher
 ) : CrimesRepository {
 
+
     override suspend fun getAllCrimes(onlyActive: Boolean?): List<Crime>? {
         return queryCrimes(onlyActive)
     }
 
     override suspend fun findCrimeByIdVMS(crimeId: Long): Crime? {
-        return getCrimeById(crimeId)
+        Log.i("findCrime", crimeId.toString())
+        return getCrimeById(crimeId).also { Log.i("return also", it?.title.toString()) }
     }
 
     override suspend fun addCrime(crime: Crime?) {
-        TODO("Not yet implemented")
+        createCrime(crime)
     }
 
     override suspend fun updateCrime(crimeId: Long?, crime: Crime?) {
-        TODO("Not yet implemented")
+        if (crime != null) {
+            try {
+                updateCrimeField(crimeId, crime)
+            } catch (e: SQLiteException) {
+                Log.i("SQLiteException", e.message.toString())
+            }
+        }
     }
 
     override suspend fun deleteCrime(crimeId: Long?): Int? {
-        TODO("Not yet implemented")
+        val count = delete(crimeId)
+        Log.i("deleteCrime", count.toString())
+        return count
     }
 
-    override suspend fun deleteAllCrimes() {
+    override suspend fun clearCrimes() {
         TODO("Not yet implemented")
     }
 
     private fun queryCrimes(onlyActive: Boolean?): List<Crime>? {
         val cursor = cursorCrimes(onlyActive == true)
 
-        return if (cursor.count == 0) {
-            return null
-        } else {
-            cursor.use {
+        return cursor.use {
+            if (cursor.count == 0) {
+                return@use null
+            } else {
+
                 val list = mutableListOf<Crime>()
                 while (cursor.moveToNext()) {
                     list.add(parseCrime(cursor))
@@ -91,6 +106,7 @@ class SQLiteCrimesRepository(
                 return@use null
             }
             cursor.moveToFirst()
+            Log.i("parseCrime", parseCrime(it).title.toString())
             parseCrime(it)
         }
     }
@@ -100,11 +116,68 @@ class SQLiteCrimesRepository(
             id = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_ID)),
             solved = cursor.getInt(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SOLVED)),
             title = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_TITLE)),
-            suspectName = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SUSPECT)),
+            suspect = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SUSPECT)),
             desciption = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_DESCRIPTION)),
             creation_date = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_CREATION_DATE)),
             imageURI = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_IMAGE_URI))
         )
+    }
+
+    private fun updateCrimeField(crimeId: Long?, crime: Crime?) {
+        db.update(
+            CrimesTable.TABLE_NAME,
+            contentValuesOf(
+                CrimesTable.COLUMN_SOLVED to crime?.solved,
+                CrimesTable.COLUMN_TITLE to crime?.title,
+                CrimesTable.COLUMN_SUSPECT to crime?.suspect,
+                CrimesTable.COLUMN_DESCRIPTION to crime?.desciption,
+                CrimesTable.COLUMN_CREATION_DATE to crime?.creation_date,
+                CrimesTable.COLUMN_IMAGE_URI to crime?.imageURI,
+            ),
+            "${CrimesTable.COLUMN_ID} = ?",
+            arrayOf(crimeId.toString())
+        )
+    }
+
+    private fun createCrime(crime: Crime?) {
+
+        val cDate = crime?.creation_date
+            ?: System.currentTimeMillis().toString()
+
+        try {
+            db.insertOrThrow(
+                CrimesTable.TABLE_NAME,
+                null,
+                contentValuesOf(
+                    CrimesTable.COLUMN_SOLVED to crime?.solved,
+                    CrimesTable.COLUMN_TITLE to crime?.title,
+                    CrimesTable.COLUMN_SUSPECT to crime?.suspect,
+                    CrimesTable.COLUMN_DESCRIPTION to crime?.desciption,
+                    CrimesTable.COLUMN_CREATION_DATE to cDate,
+                    CrimesTable.COLUMN_IMAGE_URI to crime?.imageURI
+                )
+            )
+        } catch (e: SQLiteConstraintException) {
+            Log.i("SQLite createCrime", e.message.toString())
+        }
+    }
+
+    private fun delete(crimeId: Long?): Int? {
+        db.delete(
+            CrimesTable.TABLE_NAME,
+            "${CrimesTable.COLUMN_ID} = ?",
+            arrayOf(crimeId.toString())
+        )
+        // запрашиваем количество
+        val cursor = db.rawQuery("SELECT  count(*) FROM ${CrimesTable.TABLE_NAME}", null)
+
+        return cursor.use {
+            if (cursor.count == 0) {
+                return@use null
+            }
+            cursor.moveToFirst()
+            it.getInt(0)
+        }
     }
 
 

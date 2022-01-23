@@ -3,11 +3,18 @@ package com.asurspace.criminalintent.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
+import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@DelicateCoroutinesApi
 class CrimesRecyclerAdapter(
-    private val crimes: List<Crime>,
+    private val crimes: List<Crime>?,
     private val selectedItem: (Crime) -> Unit,
 ) :
     RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
@@ -22,16 +29,18 @@ class CrimesRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: CrimeViewHolder, position: Int) {
-        holder.setCrime(crimes[position])
+        holder.setCrime(crimes?.get(position) ?: Crime(null, null, null, null, null, null, null))
     }
 
-    override fun getItemCount(): Int = crimes.size
+    override fun getItemCount(): Int = crimes?.size ?: 0
 
+    @DelicateCoroutinesApi
     inner class CrimeViewHolder(
         private val binding: RecyclerCrimesItemBinding,
         val selectedItem: (Crime) -> Unit,
-    ) :
-        RecyclerView.ViewHolder(binding.root) {
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val crimeDB: CrimesRepository = Repository.crimesRepo
 
         private var crime: Crime? = null
 
@@ -39,14 +48,15 @@ class CrimesRecyclerAdapter(
             this.crime = crime
             binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
             binding.crimeTitle.text = crime.title
-            binding.suspectName.text = crime.suspectName
+            binding.suspectName.text = crime.suspect
         }
 
 
         init {
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
                 crime?.let {
-                    //it.solved = b
+                    //TODO("#2")
+                    changeState(b, it)
                 }
             }
 
@@ -61,5 +71,21 @@ class CrimesRecyclerAdapter(
                 }
             }
         }
+
+        @DelicateCoroutinesApi
+        private fun changeState(solved: Boolean, crime: Crime) {
+            val c = crime.toMutableCrime()
+
+            if (solved) {
+                c.solved = 1
+            } else {
+                c.solved = 0
+            }
+
+            GlobalScope.launch(Dispatchers.IO) {
+                crimeDB.updateCrime(crime.id, c.toCrime())
+            }
+        }
+
     }
 }

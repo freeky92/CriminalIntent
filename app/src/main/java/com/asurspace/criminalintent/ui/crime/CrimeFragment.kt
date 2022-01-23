@@ -1,26 +1,32 @@
 package com.asurspace.criminalintent.ui.crime
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
-import com.asurspace.criminalintent.FragmentNameList
+import androidx.fragment.app.activityViewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
+import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
-import com.asurspace.criminalintent.dateFormat
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
+import com.asurspace.criminalintent.model.SharedVM
+import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.dateFormat
+import com.asurspace.criminalintent.util.viewModelCreator
 import java.util.*
 
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
-    private val viewModel by viewModels<CrimeVM>()
+    private val sharedViewModel by activityViewModels<SharedVM>()
+    private val viewModel by viewModelCreator {
+        CrimeVM(
+            sharedViewModel.crimeId.value ?: 0,
+            Repository.crimesRepo
+        )
+    }
 
     private var _binding: CrimeFragmentBinding? = null
 
@@ -28,7 +34,10 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getCrimeIdFromList()
+        //viewModel.setCrimeOnVM(sharedViewModel.crimeId.value ?: 0)
+        /*setFragmentResultListener(FragmentNameList.CRIME_FRAGMENT) { _, bundle ->
+            viewModel.setCrimeOnVM(bundle.getLong(CrimesTable.COLUMN_ID))
+        }*/
     }
 
     override fun onCreateView(
@@ -43,21 +52,26 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        lifecycle.addObserver(viewModel)
+
         restoreValue()
         listenerInitialization()
     }
 
     private fun restoreValue() {
-        binding.updateTb.text = resources.getString(R.string.date)
-            .plus(dateFormat.format(Date(viewModel.crimeLD.value?.creation_date ?: 0)))
+        viewModel.crimeLD.observe(viewLifecycleOwner) {
+            binding.crimeTitleInput.editText?.setText(it?.title)
+            binding.crimeSuspectNameInput.editText?.setText(it?.suspect)
+            binding.crimeDescriptionInput.editText?.setText(it?.desciption)
+            binding.checkboxSolved.isChecked = it?.solved == 1
+            binding.buttonTitleTv1.text = resources.getString(R.string.details_plus).plus(
+                dateFormat.format(
+                    Date(it?.creation_date ?: 0)
+                )
+            )
+            binding.updateTb.text = resources.getString(R.string.update)
+        }
 
-        binding.crimeTitleInput.editText?.setText(viewModel.crimeLD.value?.title ?: "")
-        binding.crimeSuspectNameInput.editText?.setText(
-            viewModel.crimeLD.value?.suspectName ?: ""
-        )
-        binding.crimeDescriptionInput.editText?.setText(
-            viewModel.crimeLD.value?.desciption ?: ""
-        )
     }
 
     private fun listenerInitialization() {
@@ -83,7 +97,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     }
 
-
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
@@ -91,23 +104,14 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         )
     }
 
-    private fun getCrimeIdFromList() {
-        setFragmentResultListener(FragmentNameList.CRIME_FRAGMENT) { _, bundle ->
-            // Any type can be passed via to the bundle
-            val result = bundle.getLong(CrimesTable.COLUMN_ID)
-            Log.i("bundle RESULT", result.toString())
-            viewModel.setCrimeOnVM(result)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         fragmentResumeResult()
-        getCrimeIdFromList()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 }

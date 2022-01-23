@@ -8,7 +8,7 @@ data class Crime(
     val id: Long?,
     val solved: Int?,
     val title: String?,
-    val suspectName: String?,
+    val suspect: String?,
     val desciption: String?,
     val creation_date: Long?,
     val imageURI: String?
@@ -22,7 +22,7 @@ data class Crime(
             id = this.id,
             solved = this.solved,
             title = this.title,
-            suspectName = this.suspectName,
+            suspect = this.suspect,
             desciption = this.desciption,
             creation_date = this.creation_date,
             imageURI = this.imageURI
@@ -37,7 +37,7 @@ data class MutableCrime(
     var id: Long?,
     var solved: Int?,
     var title: String?,
-    var suspectName: String?,
+    var suspect: String?,
     var desciption: String?,
     var creation_date: Long?,
     var imageURI: String?
@@ -48,7 +48,7 @@ data class MutableCrime(
             id = this.id,
             solved = this.solved,
             title = this.title,
-            suspectName = this.suspectName,
+            suspect = this.suspect,
             desciption = this.desciption,
             creation_date = this.creation_date,
             imageURI = this.imageURI

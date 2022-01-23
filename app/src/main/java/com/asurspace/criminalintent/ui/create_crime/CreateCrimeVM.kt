@@ -5,7 +5,7 @@ import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
-import com.asurspace.criminalintent.share
+import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -41,7 +41,7 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
                     id = null,
                     solved = 0,
                     title = titleLD.value,
-                    suspectName = suspectLD.value,
+                    suspect = suspectLD.value,
                     desciption = descriptionLD.value,
                     creation_date = System.currentTimeMillis(),
                     imageURI = null
