@@ -1,9 +1,11 @@
 package com.asurspace.criminalintent.ui
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
@@ -55,6 +57,11 @@ class CrimesRecyclerAdapter(
             binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
             binding.crimeTitle.text = crime.title
             binding.suspect.text = crime.suspect
+            if (crime.imageURI != null) {
+                binding.rvCrimeImage.setImageURI(Uri.parse(crime.imageURI))
+            } else {
+                binding.rvCrimeImage.setImageResource(R.drawable.ic_baseline_insert_photo_24)
+            }
 
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
                 changeState(b, crime)
