@@ -149,6 +149,8 @@
         app:layout_constraintTop_toTopOf="@+id/checkbox_solved"
         tools:ignore="TextContrastCheck" />
 
+
+
     <CheckBox
         android:id="@+id/checkbox_solved"
         android:layout_width="wrap_content"

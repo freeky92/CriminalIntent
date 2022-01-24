@@ -21,7 +21,6 @@ class SQLiteCrimesRepository(
     }
 
     override suspend fun findCrimeByIdVMS(crimeId: Long): Crime? {
-        Log.i("findCrime", crimeId.toString())
         return getCrimeById(crimeId).also { Log.i("return also", it?.title.toString()) }
     }
 
@@ -106,7 +105,6 @@ class SQLiteCrimesRepository(
                 return@use null
             }
             cursor.moveToFirst()
-            Log.i("parseCrime", parseCrime(it).title.toString())
             parseCrime(it)
         }
     }

@@ -10,5 +10,7 @@ CREATE TABLE "crimes" (
 	"image_uri"        TEXT
 );
 
-INSERT INTO "crimes" ("solved", "title", "creation_date")
-VALUES 	(0, "DB initialized!", 0);
+INSERT INTO "crimes" ("solved", "title", "suspect", "description", "creation_date")
+VALUES 	(0, "Broken bottle", "Somebody", "Somebody crashed a bottle of vine.", 0),
+        (0, "Broken bottle", "Sandy", "Somebody crashed a bottle of vine.", 0),
+        (0, "Broken bottle", "Melisa", "Somebody crashed a bottle of vine.", 0);
