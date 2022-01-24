@@ -75,7 +75,7 @@
             app:layout_constraintTop_toBottomOf="@+id/crime_title_input" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_suspectName_input"
+            android:id="@+id/crime_suspect_input"
             style="@style/EditTextCustomTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/crime_description"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/crime_suspectName_input" />
+            app:layout_constraintTop_toBottomOf="@+id/crime_suspect_input" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/crime_description_input"
@@ -127,7 +127,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/button_title_tv1"
+            android:id="@+id/time_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -149,7 +149,7 @@
             app:cornerRadius="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_title_tv1"
+            app:layout_constraintTop_toBottomOf="@+id/time_tv"
             tools:ignore="TextContrastCheck"
             tools:text="16:09:22 WED 17.01.2022" />
 

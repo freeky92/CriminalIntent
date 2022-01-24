@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
@@ -19,7 +18,9 @@ import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
 import com.asurspace.criminalintent.util.FragmentNameList
 import com.asurspace.criminalintent.util.viewModelCreator
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()

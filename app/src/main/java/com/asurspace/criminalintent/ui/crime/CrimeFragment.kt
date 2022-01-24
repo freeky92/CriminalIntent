@@ -16,8 +16,10 @@ import com.asurspace.criminalintent.model.SharedVM
 import com.asurspace.criminalintent.util.FragmentNameList
 import com.asurspace.criminalintent.util.dateFormat
 import com.asurspace.criminalintent.util.viewModelCreator
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
+@DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
@@ -34,10 +36,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //viewModel.setCrimeOnVM(sharedViewModel.crimeId.value ?: 0)
-        /*setFragmentResultListener(FragmentNameList.CRIME_FRAGMENT) { _, bundle ->
-            viewModel.setCrimeOnVM(bundle.getLong(CrimesTable.COLUMN_ID))
-        }*/
     }
 
     override fun onCreateView(
@@ -56,21 +54,26 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
         restoreValue()
         listenerInitialization()
+        subscribeOnLD()
     }
 
     private fun restoreValue() {
-        viewModel.crimeLD.observe(viewLifecycleOwner) {
-            binding.crimeTitleInput.editText?.setText(it?.title)
-            binding.crimeSuspectNameInput.editText?.setText(it?.suspect)
-            binding.crimeDescriptionInput.editText?.setText(it?.desciption)
-            binding.checkboxSolved.isChecked = it?.solved == 1
-            binding.buttonTitleTv1.text = resources.getString(R.string.details_plus).plus(
-                dateFormat.format(
-                    Date(it?.creation_date ?: 0)
-                )
+
+        binding.checkboxSolved.isChecked = viewModel.solvedLD.value == 1
+
+        binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value)
+
+        binding.crimeSuspectInput.editText?.setText(viewModel.suspectLD.value)
+
+        binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value)
+
+        binding.timeTv.text = resources.getString(R.string.details_plus).plus(
+            dateFormat.format(
+                Date(viewModel.cDateLD.value ?: 0)
             )
-            binding.updateTb.text = resources.getString(R.string.update)
-        }
+        )
+
+        binding.updateTb.text = resources.getString(R.string.update)
 
     }
 
@@ -79,7 +82,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         binding.crimeTitleInput.editText?.addTextChangedListener {
             viewModel.setUpdatedTitle(it.toString())
         }
-        binding.crimeSuspectNameInput.editText?.addTextChangedListener {
+        binding.crimeSuspectInput.editText?.addTextChangedListener {
             viewModel.setUpdatedSuspect(it.toString())
         }
         binding.crimeDescriptionInput.editText?.addTextChangedListener {
@@ -92,7 +95,18 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
         binding.updateTb.setOnClickListener {
             viewModel.update()
-            (activity as MainActivity).showSnackBar(resources.getString(R.string.msg_crime_created))
+            with(activity as MainActivity) {
+                showSnackBar(resources.getString(R.string.msg_crime_updated))
+                onBackPressed()
+            }
+        }
+
+    }
+
+    private fun subscribeOnLD() {
+        viewModel.crimeLD.observe(viewLifecycleOwner) {
+            viewModel.setFields()
+            restoreValue()
         }
 
     }

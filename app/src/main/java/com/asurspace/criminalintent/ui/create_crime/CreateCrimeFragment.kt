@@ -13,8 +13,10 @@ import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.util.FragmentNameList
 import com.asurspace.criminalintent.util.dateFormat
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
+@DelicateCoroutinesApi
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private val viewModel by viewModels<CreateCrimeVM>()
@@ -40,7 +42,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
     }
 
     private fun restoreValue() {
-        binding.buttonTitleTv1.text = dateFormat.format(Date())
+        binding.timeTv.text = dateFormat.format(Date())
     }
 
     private fun listenerInitialization() {
@@ -48,7 +50,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         binding.crimeTitleInput.editText?.addTextChangedListener {
             viewModel.setUpdatedTitle(it.toString())
         }
-        binding.crimeSuspectNameInput.editText?.addTextChangedListener {
+        binding.crimeSuspectInput.editText?.addTextChangedListener {
             viewModel.setUpdatedSuspect(it.toString())
         }
         binding.crimeDescriptionInput.editText?.addTextChangedListener {

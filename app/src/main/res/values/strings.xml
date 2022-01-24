@@ -17,5 +17,6 @@
     <string name="enter_suspect_name">Enter suspect name</string>
     <string name="list">List</string>
     <string name="msg_crime_created">Crime created!</string>
+    <string name="msg_crime_updated">Crime updated!</string>
     <string name="update">Update</string>
 </resources>

@@ -48,11 +48,11 @@ class CrimesRecyclerAdapter(
             this.crime = crime
             binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
             binding.crimeTitle.text = crime.title
-            binding.suspectName.text = crime.suspect
+            binding.suspect.text = crime.suspect
         }
 
-
         init {
+
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
                 crime?.let {
                     //TODO("#2")
@@ -60,15 +60,18 @@ class CrimesRecyclerAdapter(
                 }
             }
 
-            binding.ll.setOnClickListener {
+            binding.crimeRaw.setOnClickListener {
                 crime?.let {
                     selectedItem(it)
                 }
             }
-            binding.rvCrimeImage.setOnClickListener {
+
+            binding.crimeRaw.setOnLongClickListener {
+                //todo
                 crime?.let {
-                    selectedItem(it)
+                    removeItem(it.id ?: 0)
                 }
+                true
             }
         }
 
@@ -86,6 +89,13 @@ class CrimesRecyclerAdapter(
                 crimeDB.updateCrime(crime.id, c.toCrime())
             }
         }
+
+        private fun removeItem(crimeId: Long) {
+            GlobalScope.launch(Dispatchers.IO) {
+                crimeDB.deleteCrime(crimeId)
+            }
+        }
+
 
     }
 }

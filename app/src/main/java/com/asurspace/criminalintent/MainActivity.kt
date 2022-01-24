@@ -12,13 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
-import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
-import com.asurspace.criminalintent.ui.crime.CrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
 import com.asurspace.criminalintent.util.FragmentNameList
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class MainActivity : AppCompatActivity() {
 
 
