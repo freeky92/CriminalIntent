@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.model.SharedVM
+import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
 import com.asurspace.criminalintent.util.FragmentNameList
@@ -96,4 +98,12 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
             bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CRIMES_LIST_FRAGMENT)
         )
     }
+
+    private fun setResult(crimeId: Long?) {
+        setFragmentResult(
+            FragmentNameList.CRIME_FRAGMENT,
+            bundleOf(AppSQLiteContract.CrimesTable.COLUMN_ID to crimeId)
+        )
+    }
+
 }

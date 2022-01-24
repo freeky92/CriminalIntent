@@ -41,7 +41,7 @@
             android:hint="@string/crime_title"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/crime_iv"
+            app:layout_constraintStart_toEndOf="@+id/crime_iv"
             app:layout_constraintTop_toTopOf="@+id/crime_iv"
             app:startIconDrawable="@drawable/ic_crime">
 
@@ -85,7 +85,7 @@
             android:hint="@string/crime_description"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="@+id/crime_suspect_input"
-            app:layout_constraintStart_toStartOf="@+id/crime_title_input"
+            app:layout_constraintStart_toStartOf="@+id/crime_suspect_input"
             app:layout_constraintTop_toBottomOf="@+id/crime_suspect_input"
             app:startIconDrawable="@drawable/ic_baseline_description_24">
 
@@ -108,36 +108,24 @@
             app:layout_constraintStart_toStartOf="@+id/crime_description_input"
             app:layout_constraintTop_toBottomOf="@+id/crime_description_input" />
 
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/remove_tb"
+            android:id="@+id/create_plus_date_tb"
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
             android:backgroundTint="@color/design_default_color_secondary_variant"
-            android:text="@string/remove_crime"
+            android:text="@string/create_crime"
+            android:textAllCaps="true"
             android:textColor="@color/white"
             app:cornerRadius="30dp"
-
-            app:layout_constraintBottom_toBottomOf="@+id/checkbox_solved"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.40"
-            app:layout_constraintStart_toEndOf="@+id/checkbox_solved"
-            app:layout_constraintTop_toTopOf="@+id/checkbox_solved"
-            app:textAllCaps="true"
-            tools:ignore="TextContrastCheck" />
-
-        <CheckBox
-            android:id="@+id/checkbox_solved"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/solved"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/date_tv"
+            tools:ignore="TextContrastCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
