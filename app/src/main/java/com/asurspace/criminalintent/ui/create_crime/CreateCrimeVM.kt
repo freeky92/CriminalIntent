@@ -9,7 +9,8 @@ import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(), LifecycleEventObserver {
+class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
+    LifecycleEventObserver {
 
     private val crimeDB: CrimesRepository = Repository.crimesRepo
 
@@ -21,6 +22,9 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     private val _description = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_DESCRIPTION)
     val descriptionLD = _description.share()
+
+    private val _imageUriLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_DESCRIPTION)
+    val imageUriLD = _imageUriLD.share()
 
     fun setUpdatedTitle(title: String?) {
         _titleLD.value = title
@@ -34,7 +38,13 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
         _description.value = description
     }
 
-    fun addCrime(){
+    fun setUpdatedImage(uri: String?) {
+        if (imageUriLD.value != uri) {
+            _imageUriLD.value = uri
+        }
+    }
+
+    fun addCrime() {
         viewModelScope.launch(Dispatchers.IO) {
             crimeDB.addCrime(
                 Crime(
@@ -44,7 +54,7 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
                     suspect = suspectLD.value,
                     desciption = descriptionLD.value,
                     creation_date = System.currentTimeMillis(),
-                    imageURI = null
+                    imageURI = imageUriLD.value
                 )
             )
         }
@@ -68,21 +78,27 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
         ) {
             savedStateHandle.set(CrimesTable.COLUMN_DESCRIPTION, descriptionLD.value)
         }
+
+        if (!savedStateHandle.contains(CrimesTable.COLUMN_IMAGE_URI)
+            || savedStateHandle.get<String>(CrimesTable.COLUMN_IMAGE_URI) != imageUriLD.value
+        ) {
+            savedStateHandle.set(CrimesTable.COLUMN_IMAGE_URI, imageUriLD.value)
+        }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        when(event){
-            Lifecycle.Event.ON_CREATE ->{
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> {
 
             }
-            Lifecycle.Event.ON_START ->{}
-            Lifecycle.Event.ON_RESUME ->{}
-            Lifecycle.Event.ON_PAUSE ->{}
-            Lifecycle.Event.ON_STOP ->{}
-            Lifecycle.Event.ON_DESTROY ->{
+            Lifecycle.Event.ON_START -> {}
+            Lifecycle.Event.ON_RESUME -> {}
+            Lifecycle.Event.ON_PAUSE -> {}
+            Lifecycle.Event.ON_STOP -> {}
+            Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
             }
-            Lifecycle.Event.ON_ANY ->{}
+            Lifecycle.Event.ON_ANY -> {}
         }
     }
 

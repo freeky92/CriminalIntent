@@ -34,8 +34,6 @@ import java.util.*
 @DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
-    private lateinit var docPaths: ArrayList<Any>
-    private lateinit var photoPaths: ArrayList<Any>
     private val sharedViewModel by activityViewModels<SharedVM>()
     private val viewModel by viewModelCreator {
         CrimeVM(
@@ -44,8 +42,10 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         )
     }
 
-    private var _binding: CrimeFragmentBinding? = null
+    private var docPaths = ArrayList<Any>()
+    private var photoPaths = ArrayList<Any>()
 
+    private var _binding: CrimeFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,17 +167,17 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                photoPaths = ArrayList<Any>()
                 data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)
                     ?.let { photoPaths.addAll(it) }
             }
             REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
-                docPaths = ArrayList<Any>()
                 data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_DOCS)
                     ?.let { docPaths.addAll(it) }
             }
         }
-        viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
+        if (photoPaths.isNotEmpty()) {
+            viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
+        }
     }
 
 }

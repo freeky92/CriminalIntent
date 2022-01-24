@@ -110,7 +110,7 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/create_plus_date_tb"
+            android:id="@+id/create_tb"
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
