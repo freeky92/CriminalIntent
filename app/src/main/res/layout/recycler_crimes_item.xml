@@ -20,6 +20,7 @@
         android:id="@+id/layer_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
         app:constraint_referenced_ids="suspect,rv_crime_image,crime_title"
         app:layout_constraintBottom_toBottomOf="@+id/suspect"
         app:layout_constraintEnd_toEndOf="@+id/crime_title"
