@@ -177,6 +177,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
         if (photoPaths.isNotEmpty()) {
             viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
+            photoPaths.clear()
         }
     }
 

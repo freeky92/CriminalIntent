@@ -23,19 +23,25 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
     private val _description = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_DESCRIPTION)
     val descriptionLD = _description.share()
 
-    private val _imageUriLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_DESCRIPTION)
+    private val _imageUriLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_IMAGE_URI)
     val imageUriLD = _imageUriLD.share()
 
     fun setUpdatedTitle(title: String?) {
-        _titleLD.value = title
+        if (imageUriLD.value != title) {
+            _titleLD.value = title
+        }
     }
 
     fun setUpdatedSuspect(suspect: String?) {
-        _suspectLD.value = suspect
+        if (imageUriLD.value != suspect) {
+            _suspectLD.value = suspect
+        }
     }
 
     fun setUpdatedDescription(description: String?) {
-        _description.value = description
+        if (imageUriLD.value != description) {
+            _description.value = description
+        }
     }
 
     fun setUpdatedImage(uri: String?) {
