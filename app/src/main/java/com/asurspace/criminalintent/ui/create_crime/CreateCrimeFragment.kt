@@ -42,7 +42,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
     }
 
     private fun restoreValue() {
-        binding.timeTv.text = dateFormat.format(Date())
+        binding.dateTv.text = dateFormat.format(Date())
     }
 
     private fun listenerInitialization() {

@@ -116,48 +116,47 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
+            android:inputType="textLongMessage"
             android:textSize="15sp"
             tools:ignore="TextContrastCheck" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/time_tv"
+        android:id="@+id/date_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="@string/details"
+        android:text="@string/creation_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/crime_description_input" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_tb"
+        android:id="@+id/remove_tb"
         style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_margin="16dp"
         android:backgroundTint="@color/design_default_color_secondary_variant"
+        android:text="@string/remove_crime"
+        android:textAllCaps="true"
         android:textColor="@color/white"
         app:cornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/checkbox_solved"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_tv"
-        tools:ignore="TextContrastCheck"
-        tools:text="16:09:22 WED 17.01.2022" />
+        app:layout_constraintStart_toEndOf="@+id/checkbox_solved"
+        app:layout_constraintTop_toTopOf="@+id/checkbox_solved"
+        tools:ignore="TextContrastCheck" />
 
     <CheckBox
         android:id="@+id/checkbox_solved"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_margin="8dp"
         android:text="@string/solved"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/update_tb" />
+        app:layout_constraintTop_toBottomOf="@+id/date_tv" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

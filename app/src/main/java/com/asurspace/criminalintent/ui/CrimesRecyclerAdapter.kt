@@ -1,5 +1,6 @@
 package com.asurspace.criminalintent.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -16,8 +17,13 @@ import kotlinx.coroutines.launch
 class CrimesRecyclerAdapter(
     private val crimes: List<Crime>?,
     private val selectedItem: (Crime) -> Unit,
-) :
-    RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
+) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
+
+    var crimeList: List<Crime> = emptyList()
+        set(newValue) {
+            field = newValue
+            notifyDataSetChanged()
+        }
 
     private lateinit var binding: RecyclerCrimesItemBinding
 
@@ -49,30 +55,20 @@ class CrimesRecyclerAdapter(
             binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
             binding.crimeTitle.text = crime.title
             binding.suspect.text = crime.suspect
-        }
-
-        init {
 
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
-                crime?.let {
-                    //TODO("#2")
-                    changeState(b, it)
-                }
+                changeState(b, crime)
             }
 
-            binding.crimeRaw.setOnClickListener {
-                crime?.let {
-                    selectedItem(it)
-                }
+            binding.layerGroup.setOnClickListener {
+                selectedItem(crime)
             }
 
-            binding.crimeRaw.setOnLongClickListener {
-                //todo
-                crime?.let {
-                    removeItem(it.id ?: 0)
-                }
+            binding.layerGroup.setOnLongClickListener {
+                removeItem(crime.id ?: 0)
                 true
             }
+
         }
 
         @DelicateCoroutinesApi
@@ -84,7 +80,7 @@ class CrimesRecyclerAdapter(
             } else {
                 c.solved = 0
             }
-
+            Log.i("changeState", "$c $solved")
             GlobalScope.launch(Dispatchers.IO) {
                 crimeDB.updateCrime(crime.id, c.toCrime())
             }

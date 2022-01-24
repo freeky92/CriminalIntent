@@ -60,16 +60,13 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     }
 
     private fun subscribeOnLiveData() {
-
         viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
                 sharedViewModel.setCrimeId(crime.id)
-
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
         })
-
     }
 
     override fun onResume() {

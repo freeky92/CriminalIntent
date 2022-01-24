@@ -67,13 +67,11 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
         binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value)
 
-        binding.timeTv.text = resources.getString(R.string.details_plus).plus(
+        binding.dateTv.text = resources.getString(R.string.creation_date_plus).plus(
             dateFormat.format(
                 Date(viewModel.cDateLD.value ?: 0)
             )
         )
-
-        binding.updateTb.text = resources.getString(R.string.update)
 
     }
 
@@ -93,10 +91,10 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             viewModel.setSolvedState(b)
         }
 
-        binding.updateTb.setOnClickListener {
-            viewModel.update()
+        binding.removeTb.setOnClickListener {
+            viewModel.remove()
             with(activity as MainActivity) {
-                showSnackBar(resources.getString(R.string.msg_crime_updated))
+                showSnackBar(resources.getString(R.string.msg_crime_removed))
                 onBackPressed()
             }
         }

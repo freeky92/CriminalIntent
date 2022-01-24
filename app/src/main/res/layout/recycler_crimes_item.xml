@@ -2,9 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/crime_raw"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="60dp"
     android:layout_margin="4dp"
     android:background="@drawable/stroke_rv_item_background">
 
@@ -12,26 +11,38 @@
         android:id="@+id/rv_solved_cb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.helper.widget.Layer
+        android:id="@+id/layer_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="suspect,rv_crime_image,crime_title"
+        app:layout_constraintBottom_toBottomOf="@+id/suspect"
+        app:layout_constraintEnd_toEndOf="@+id/crime_title"
+        app:layout_constraintStart_toEndOf="@+id/rv_solved_cb"
+        app:layout_constraintTop_toTopOf="@+id/crime_title" />
 
     <ImageView
         android:id="@+id/rv_crime_image"
         android:layout_width="42dp"
         android:layout_height="42dp"
+        android:layout_marginStart="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/rv_solved_cb"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_baseline_person_search_24" />
 
-
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/crime_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@id/suspect"
@@ -45,23 +56,26 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/appCompatImageView"
         app:layout_constraintStart_toEndOf="@id/rv_crime_image"
+        app:layout_constraintTop_toBottomOf="@id/crime_title"
         tools:text="Suspect name" />
-
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/appCompatImageView"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_gravity="center"
+        android:layout_marginEnd="16dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_more_vert_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

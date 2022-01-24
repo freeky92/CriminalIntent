@@ -29,11 +29,11 @@
         android:id="@+id/set_image_button"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:background="@color/transparent"
         android:layout_margin="8dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/image_settb"
         android:src="@drawable/ic_twotone_camera_alt_24"
         app:layout_constraintEnd_toEndOf="@+id/crime_iv"
-        android:contentDescription="@string/image_settb"
         app:layout_constraintStart_toStartOf="@+id/crime_iv"
         app:layout_constraintTop_toBottomOf="@+id/crime_iv" />
 
@@ -123,12 +123,12 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/time_tv"
+        android:id="@+id/date_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="@string/details"
+        android:text="@string/creation_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/crime_description_input" />
 
@@ -141,12 +141,13 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/design_default_color_secondary_variant"
+        android:text="@string/create_crime"
         android:textColor="@color/white"
         app:cornerRadius="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_tv"
-        tools:ignore="TextContrastCheck"
-        android:text="@string/create_crime" />
+        app:layout_constraintTop_toBottomOf="@+id/date_tv"
+        app:textAllCaps="true"
+        tools:ignore="TextContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

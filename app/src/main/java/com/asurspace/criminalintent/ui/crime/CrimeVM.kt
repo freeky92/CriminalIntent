@@ -40,12 +40,17 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
         }
     }
 
-    fun update() {
+    fun remove() {
+        viewModelScope.launch(Dispatchers.IO) {
+            crimeDB.deleteCrime(crimeId)
+        }
+    }
+
+    private fun update() {
         setChanges()
         viewModelScope.launch(Dispatchers.IO) {
             crimeDB.updateCrime(crimeId, _crimeLD.value)
         }
-
     }
 
     fun setFields() {
@@ -113,26 +118,26 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 getCrime(crimeId)
-                Log.i("ON_CREATE", _crimeLD.value?.title.toString())
+                Log.i("vmOnCreate", solvedLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {
-                Log.i("ON_START", _crimeLD.value?.title.toString())
+
             }
             Lifecycle.Event.ON_RESUME -> {
-                Log.i("ON_RESUME", _crimeLD.value?.title.toString())
+
             }
             Lifecycle.Event.ON_PAUSE -> {
-
-                Log.i("ON_RESUME", _crimeLD.value?.title.toString())
+                update()
             }
             Lifecycle.Event.ON_STOP -> {
-                Log.i("ON_RESUME", _crimeLD.value?.title.toString())
+
             }
             Lifecycle.Event.ON_DESTROY -> {
-                setChanges()
-                Log.i("ON_RESUME", _crimeLD.value?.title.toString())
+                Log.i("vmOnDestroy", solvedLD.value.toString())
             }
-            Lifecycle.Event.ON_ANY -> {}
+            Lifecycle.Event.ON_ANY -> {
+
+            }
         }
     }
 
