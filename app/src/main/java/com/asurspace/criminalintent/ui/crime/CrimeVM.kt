@@ -111,7 +111,9 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
             this?.creation_date = cDateLD.value
             this?.imageURI = imageUriLD.value
         }
-        _crimeLD.value = updatedCrime?.toCrime()
+        if (crimeLD.value != updatedCrime?.toCrime()) {
+            _crimeLD.value = updatedCrime?.toCrime()
+        }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
@@ -27,12 +28,18 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
     private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
-
-    private var _binding: CrimesListFragmentBinding? = null
-
     private lateinit var crimesRecyclerAdapter: CrimesRecyclerAdapter
 
+    private var _binding: CrimesListFragmentBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //setFragmentResultListener() todo
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

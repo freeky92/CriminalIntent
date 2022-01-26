@@ -129,6 +129,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         viewModel.crimeLD.observe(viewLifecycleOwner) {
             viewModel.setFields()
             restoreValue()
+            // TODO: 25.01.2022 - setFragmentResult
         }
 
         viewModel.imageUriLD.observe(viewLifecycleOwner) {

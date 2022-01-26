@@ -3,7 +3,10 @@ package com.asurspace.criminalintent.ui
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.Repository
@@ -67,15 +70,37 @@ class CrimesRecyclerAdapter(
                 changeState(b, crime)
             }
 
-            binding.layerGroup.setOnClickListener {
+            binding.root.setOnClickListener {
                 selectedItem(crime)
             }
 
-            binding.layerGroup.setOnLongClickListener {
-                removeItem(crime.id ?: 0)
-                true
+            binding.popUpMenu.setOnClickListener {
+                showPopUpMenu(it, crime.id ?: 0)
             }
 
+        }
+
+        private fun showPopUpMenu(view: View, id: Long) {
+            val popupMenu = PopupMenu(view.context, view)
+            val context = view.context
+
+            popupMenu.menu.add(
+                0,
+                ID_REMOVE,
+                Menu.NONE,
+                context.getString(R.string.remove_menu_item)
+            )
+
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    ID_REMOVE -> {
+                        removeItem(crime?.id ?: 0)
+                    }
+                }
+                return@setOnMenuItemClickListener true
+            }
+
+            popupMenu.show()
         }
 
         @DelicateCoroutinesApi
@@ -100,5 +125,9 @@ class CrimesRecyclerAdapter(
         }
 
 
+    }
+
+    companion object {
+        const val ID_REMOVE = 1
     }
 }

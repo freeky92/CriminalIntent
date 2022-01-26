@@ -1,5 +1,6 @@
 package com.asurspace.criminalintent.ui.create_crime
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
@@ -95,16 +96,29 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
+                Log.i("create", "CCVM")
+            }
+            Lifecycle.Event.ON_START -> {
+                Log.i("start", "CCVM")
 
             }
-            Lifecycle.Event.ON_START -> {}
-            Lifecycle.Event.ON_RESUME -> {}
-            Lifecycle.Event.ON_PAUSE -> {}
-            Lifecycle.Event.ON_STOP -> {}
+            Lifecycle.Event.ON_RESUME -> {
+                Log.i("resume", "CCVM")
+
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+                Log.i("pause", "CCVM")
+            }
+            Lifecycle.Event.ON_STOP -> {
+                Log.i("stop", "CCVM")
+            }
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
+                Log.i("destroy", "CCVM")
+
             }
-            Lifecycle.Event.ON_ANY -> {}
+            Lifecycle.Event.ON_ANY -> {
+            }
         }
     }
 

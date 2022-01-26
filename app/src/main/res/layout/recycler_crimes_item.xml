@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:layout_margin="4dp"
-    android:background="@drawable/stroke_rv_item_background">
+    android:background="?android:attr/selectableItemBackground">
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/rv_solved_cb"
@@ -15,17 +15,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.helper.widget.Layer
-        android:id="@+id/layer_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        app:constraint_referenced_ids="suspect,rv_crime_image,crime_title"
-        app:layout_constraintBottom_toBottomOf="@+id/suspect"
-        app:layout_constraintEnd_toEndOf="@+id/crime_title"
-        app:layout_constraintStart_toEndOf="@+id/rv_solved_cb"
-        app:layout_constraintTop_toTopOf="@+id/crime_title" />
 
     <ImageView
         android:id="@+id/rv_crime_image"
@@ -47,7 +36,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@id/suspect"
-        app:layout_constraintEnd_toStartOf="@+id/appCompatImageView"
+        app:layout_constraintEnd_toStartOf="@+id/popUpMenu"
         app:layout_constraintStart_toEndOf="@id/rv_crime_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Crime Title" />
@@ -61,13 +50,13 @@
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/appCompatImageView"
+        app:layout_constraintEnd_toStartOf="@+id/popUpMenu"
         app:layout_constraintStart_toEndOf="@id/rv_crime_image"
         app:layout_constraintTop_toBottomOf="@id/crime_title"
         tools:text="Suspect name" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/appCompatImageView"
+        android:id="@+id/popUpMenu"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_gravity="center"

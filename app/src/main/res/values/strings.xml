@@ -22,4 +22,5 @@
     <string name="msg_crime_removed">Crime removed!</string>
     <string name="update">Update</string>
     <string name="remove_crime">Remove crime</string>
+    <string name="remove_menu_item">Remove</string>
 </resources>
