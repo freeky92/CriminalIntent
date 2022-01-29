@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteException
 import android.util.Log
 import androidx.core.content.contentValuesOf
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -20,29 +21,27 @@ class SQLiteCrimesRepository(
         return queryCrimes(onlyActive)
     }
 
-    override suspend fun findCrimeByIdVMS(crimeId: Long): Crime? {
+    override suspend fun findCrimeById(crimeId: Long): Crime? {
         return getCrimeById(crimeId).also { Log.i("return also", it?.title.toString()) }
     }
 
-    override suspend fun addCrime(crime: Crime?) {
-        createCrime(crime)
+    override suspend fun addCrime(crime: Crime) {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun updateCrime(crimeId: Long?, crime: Crime?) {
-        if (crime != null) {
-            try {
-                updateCrimeField(crimeId, crime)
-            } catch (e: SQLiteException) {
-                Log.i("SQLiteException", e.message.toString())
-            }
-        }
+
+    override suspend fun setSolved(solvedTuples: SetSolvedTuples) {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun deleteCrime(crimeId: Long?): Int? {
-        val count = delete(crimeId)
-        Log.i("deleteCrime", count.toString())
-        return count
+    override suspend fun updateCrime(crime: Crime?) {
+        TODO("Not yet implemented")
     }
+
+    override suspend fun deleteCrime(crimeId: Long) {
+        TODO("Not yet implemented")
+    }
+
 
     override suspend fun clearCrimes() {
         TODO("Not yet implemented")
@@ -112,34 +111,34 @@ class SQLiteCrimesRepository(
     private fun parseCrime(cursor: Cursor): Crime {
         return Crime(
             id = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_ID)),
-            solved = cursor.getInt(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SOLVED)),
+            solved = false,
             title = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_TITLE)),
             suspect = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_SUSPECT)),
-            desciption = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_DESCRIPTION)),
-            creation_date = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_CREATION_DATE)),
+            description = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_DESCRIPTION)),
+            creationDate = cursor.getLong(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_CREATION_DATE)),
             imageURI = cursor.getString(cursor.getColumnIndexOrThrow(CrimesTable.COLUMN_IMAGE_URI))
         )
     }
 
-    private fun updateCrimeField(crimeId: Long?, crime: Crime?) {
+    private fun updateCrimeField(crime: Crime?) {
         db.update(
             CrimesTable.TABLE_NAME,
             contentValuesOf(
                 CrimesTable.COLUMN_SOLVED to crime?.solved,
                 CrimesTable.COLUMN_TITLE to crime?.title,
                 CrimesTable.COLUMN_SUSPECT to crime?.suspect,
-                CrimesTable.COLUMN_DESCRIPTION to crime?.desciption,
-                CrimesTable.COLUMN_CREATION_DATE to crime?.creation_date,
+                CrimesTable.COLUMN_DESCRIPTION to crime?.description,
+                CrimesTable.COLUMN_CREATION_DATE to crime?.creationDate,
                 CrimesTable.COLUMN_IMAGE_URI to crime?.imageURI,
             ),
             "${CrimesTable.COLUMN_ID} = ?",
-            arrayOf(crimeId.toString())
+            arrayOf(crime?.id.toString())
         )
     }
 
     private fun createCrime(crime: Crime?) {
 
-        val cDate = crime?.creation_date
+        val cDate = crime?.creationDate
             ?: System.currentTimeMillis().toString()
 
         try {
@@ -150,7 +149,7 @@ class SQLiteCrimesRepository(
                     CrimesTable.COLUMN_SOLVED to crime?.solved,
                     CrimesTable.COLUMN_TITLE to crime?.title,
                     CrimesTable.COLUMN_SUSPECT to crime?.suspect,
-                    CrimesTable.COLUMN_DESCRIPTION to crime?.desciption,
+                    CrimesTable.COLUMN_DESCRIPTION to crime?.description,
                     CrimesTable.COLUMN_CREATION_DATE to cDate,
                     CrimesTable.COLUMN_IMAGE_URI to crime?.imageURI
                 )

@@ -14,7 +14,7 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
     private val _crimeLD = MutableLiveData<Crime>()
     val crimeLD = _crimeLD.share()
 
-    private val _solvedLD = MutableLiveData<Int?>()
+    private val _solvedLD = MutableLiveData<Boolean?>()
     val solvedLD = _solvedLD.share()
 
     private val _titleLD = MutableLiveData<String?>()
@@ -35,7 +35,7 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
     private fun getCrime(crimeId: Long) {
         if (_crimeLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
-                _crimeLD.postValue(crimeDB.findCrimeByIdVMS(crimeId))
+                _crimeLD.postValue(crimeDB.findCrimeById(crimeId))
             }
         }
     }
@@ -49,7 +49,7 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
     private fun update() {
         setChanges()
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.updateCrime(crimeId, _crimeLD.value)
+            crimeDB.updateCrime(crimeLD.value)
         }
     }
 
@@ -58,23 +58,16 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
             _solvedLD.value = this?.solved
             _titleLD.value = this?.title
             _suspectLD.value = this?.suspect
-            _descriptionLD.value = this?.desciption
-            _cDateLD.value = this?.creation_date
+            _descriptionLD.value = this?.description
+            _cDateLD.value = this?.creationDate
             _imageUriLD.value = this?.imageURI
         }
     }
 
     fun setSolvedState(state: Boolean) {
-        val digit = if (state) {
-            1
-        } else {
-            0
+        if (solvedLD.value != state) {
+            _solvedLD.value = state
         }
-
-        if (solvedLD.value != digit) {
-            _solvedLD.value = digit
-        }
-
     }
 
     fun setUpdatedTitle(title: String?) {
@@ -108,7 +101,7 @@ class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) 
             this?.title = titleLD.value
             this?.suspect = suspectLD.value
             this?.desciption = descriptionLD.value
-            this?.creation_date = cDateLD.value
+            this?.creationDate = cDateLD.value
             this?.imageURI = imageUriLD.value
         }
         if (crimeLD.value != updatedCrime?.toCrime()) {

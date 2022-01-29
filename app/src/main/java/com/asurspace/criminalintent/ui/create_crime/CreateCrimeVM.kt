@@ -56,11 +56,11 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
             crimeDB.addCrime(
                 Crime(
                     id = null,
-                    solved = 0,
+                    solved = false,
                     title = titleLD.value,
                     suspect = suspectLD.value,
-                    desciption = descriptionLD.value,
-                    creation_date = System.currentTimeMillis(),
+                    description = descriptionLD.value,
+                    creationDate = System.currentTimeMillis(),
                     imageURI = imageUriLD.value
                 )
             )

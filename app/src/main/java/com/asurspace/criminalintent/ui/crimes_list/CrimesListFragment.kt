@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
@@ -69,13 +68,13 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     }
 
     private fun subscribeOnLiveData() {
-        viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
+        viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
                 sharedViewModel.setCrimeId(crime.id)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
-        })
+        }
     }
 
     override fun onResume() {

@@ -73,7 +73,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private fun restoreValue() {
 
-        binding.checkboxSolved.isChecked = viewModel.solvedLD.value == 1
+        binding.checkboxSolved.isChecked = viewModel.solvedLD.value ?: false
 
         binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value)
 

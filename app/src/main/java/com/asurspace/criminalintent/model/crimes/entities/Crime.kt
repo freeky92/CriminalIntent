@@ -1,16 +1,17 @@
 package com.asurspace.criminalintent.model.crimes.entities
 
 import android.os.Parcelable
+import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Crime(
     val id: Long?,
-    val solved: Int?,
+    val solved: Boolean?,
     val title: String?,
     val suspect: String?,
-    val desciption: String?,
-    val creation_date: Long?,
+    val description: String?,
+    val creationDate: Long?,
     val imageURI: String?
 ) : Parcelable {
     companion object {
@@ -23,23 +24,34 @@ data class Crime(
             solved = this.solved,
             title = this.title,
             suspect = this.suspect,
-            desciption = this.desciption,
-            creation_date = this.creation_date,
+            desciption = this.description,
+            creationDate = this.creationDate,
             imageURI = this.imageURI
         )
     }
 
+    fun toCrimeDbEntity(): CrimeDbEntity {
+        return CrimeDbEntity(
+            id = id ?: 0,
+            solved = solved ?: false,
+            title = title ?: "",
+            suspect = suspect ?: "",
+            description = description ?: "",
+            creationDate = creationDate ?: 0,
+            imageURI = imageURI ?: ""
+        )
+    }
 
 }
 
 @Parcelize
 data class MutableCrime(
     var id: Long?,
-    var solved: Int?,
+    var solved: Boolean?,
     var title: String?,
     var suspect: String?,
     var desciption: String?,
-    var creation_date: Long?,
+    var creationDate: Long?,
     var imageURI: String?
 ) : Parcelable {
 
@@ -49,8 +61,8 @@ data class MutableCrime(
             solved = this.solved,
             title = this.title,
             suspect = this.suspect,
-            desciption = this.desciption,
-            creation_date = this.creation_date,
+            description = this.desciption,
+            creationDate = this.creationDate,
             imageURI = this.imageURI
         )
     }

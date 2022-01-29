@@ -1,22 +1,23 @@
 package com.asurspace.criminalintent
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
+import androidx.room.Room
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
-import com.asurspace.criminalintent.model.crimes.SQLiteCrimesRepository
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteHelper
-import kotlinx.coroutines.Dispatchers
+import com.asurspace.criminalintent.model.crimes.room.RoomCrimesRepository
+import com.asurspace.criminalintent.model.room.AppDatabase
 
 object Repository {
     private lateinit var applicationContext: Context
 
-    // метод создает DB по
-    private val database: SQLiteDatabase by lazy<SQLiteDatabase> {
-        AppSQLiteHelper(applicationContext).writableDatabase
+    // метод создает RoomDb
+    private val database: AppDatabase by lazy {
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "database.db")
+            //.createFromAssert("initial_database.db")
+            .build()
     }
 
     val crimesRepo: CrimesRepository by lazy {
-        SQLiteCrimesRepository(database, Dispatchers.IO)
+        RoomCrimesRepository(database.getCrimesDao())
     }
 
     fun init(context: Context) {
