@@ -16,9 +16,9 @@ import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.model.SharedVM
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
+import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.FragmentNameList
 import com.asurspace.criminalintent.util.UtilPermissions
 import com.asurspace.criminalintent.util.viewModelCreator
@@ -28,7 +28,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
-    private val viewModel by viewModelCreator(this) { CrimesListVM(Repository.crimesRepo) }
+    private val viewModel by viewModelCreator{ CrimesListVM(Repository.crimesRepo) }
     private lateinit var crimesRecyclerAdapter: CrimesRecyclerAdapter
 
     private var _binding: CrimesListFragmentBinding? = null
@@ -119,7 +119,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     private fun setResult(crimeId: Long?) {
         setFragmentResult(
             FragmentNameList.CRIME_FRAGMENT,
-            bundleOf(AppSQLiteContract.CrimesTable.COLUMN_ID to crimeId)
+            bundleOf(CrimesTable.COLUMN_ID to crimeId)
         )
     }
 

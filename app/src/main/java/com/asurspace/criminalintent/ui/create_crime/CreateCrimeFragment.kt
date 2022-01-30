@@ -29,7 +29,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private val viewModel by viewModels<CreateCrimeVM>()
 
-    private var docPaths = ArrayList<Any>()
+    // private var docPaths = ArrayList<Any>()
     private var photoPaths = ArrayList<Any>()
 
     private var _binding: CreateCrimeFragmentBinding? = null
@@ -55,6 +55,20 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private fun restoreValue() {
         binding.dateTv.text = dateFormat.format(Date())
+
+        if (!viewModel.titleLD.value.isNullOrEmpty()) {
+            binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value ?: "")
+        }
+        if (!viewModel.suspectLD.value.isNullOrEmpty()) {
+            binding.crimeSuspectInput.editText?.setText(viewModel.suspectLD.value ?: "")
+        }
+        if (!viewModel.descriptionLD.value.isNullOrEmpty()) {
+            binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value ?: "")
+        }
+        if (!viewModel.imageUriLD.value.isNullOrEmpty()) {
+            binding.crimeIv.setImageURI(Uri.parse(viewModel.imageUriLD.value))
+        }
+
     }
 
     private fun listenerInitialization() {
@@ -95,7 +109,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private fun subscribeOnLD() {
         viewModel.imageUriLD.observe(viewLifecycleOwner) {
-            if (it != null) {
+            if (!it.isNullOrEmpty()) {
                 binding.crimeIv.setImageURI(Uri.parse(it))
             }
         }
@@ -120,7 +134,6 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
     }
 
     private fun openFilePicker() {
-        // Сюда копируем соответствующий код с сайта
         FilePickerBuilder.instance
             .setMaxCount(1)
             .setActivityTheme(R.style.Theme_CriminalIntent)

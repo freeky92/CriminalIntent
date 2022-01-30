@@ -95,6 +95,7 @@ class CrimesRecyclerAdapter(
                 when (it.itemId) {
                     ID_REMOVE -> {
                         removeItem(crime?.id ?: 0)
+
                     }
                 }
                 return@setOnMenuItemClickListener true

@@ -10,10 +10,6 @@ import kotlinx.coroutines.launch
 class CrimesListVM(private val crimeDB: CrimesRepository) : ViewModel(),
     LifecycleEventObserver {
 
-    companion object {
-        private const val CRIMELIST = "CRIMELIST"
-    }
-
     private val _crimeListLD = MutableLiveData<List<Crime>?>()
     val crimeListLD = _crimeListLD.share()
 

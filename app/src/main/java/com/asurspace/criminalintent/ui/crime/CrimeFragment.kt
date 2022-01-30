@@ -12,9 +12,9 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.model.SharedVM
 import com.asurspace.criminalintent.util.FragmentNameList
@@ -22,7 +22,6 @@ import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSION_ALL
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.dateFormat
-import com.asurspace.criminalintent.util.viewModelCreator
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
 import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
@@ -33,12 +32,8 @@ import java.util.*
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
-    private val viewModel by viewModelCreator(this) {
-        CrimeVM(
-            sharedViewModel.crimeId.value ?: 0,
-            Repository.crimesRepo
-        )
-    }
+
+    private val viewModel by viewModels<CrimeVM>()
 
     private var docPaths = ArrayList<Any>()
     private var photoPaths = ArrayList<Any>()
@@ -48,6 +43,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.setCrimeId(sharedViewModel.crimeId.value)
     }
 
     override fun onCreateView(
@@ -70,21 +66,24 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     }
 
     private fun restoreValue() {
+        binding
 
         binding.checkboxSolved.isChecked = viewModel.solvedLD.value ?: false
 
-        binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value)
-
-        binding.crimeSuspectInput.editText?.setText(viewModel.suspectLD.value)
-
-        binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value)
-
+        if (!viewModel.titleLD.value.isNullOrEmpty()) {
+            binding.crimeTitleInput.editText?.setText(viewModel.titleLD.value)
+        }
+        if (!viewModel.suspectLD.value.isNullOrEmpty()) {
+            binding.crimeSuspectInput.editText?.setText(viewModel.suspectLD.value)
+        }
+        if (!viewModel.descriptionLD.value.isNullOrEmpty()) {
+            binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value)
+        }
         binding.dateTv.text = resources.getString(R.string.creation_date_plus).plus(
             dateFormat.format(
                 Date(viewModel.cDateLD.value ?: 0)
             )
         )
-
     }
 
     private fun listenerInitialization() {
@@ -131,7 +130,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         viewModel.imageUriLD.observe(viewLifecycleOwner) {
-            if (it != null) {
+            if (!it.isNullOrEmpty()) {
                 binding.crimeIv.setImageURI(Uri.parse(it))
             }
         }
@@ -156,7 +155,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     }
 
     private fun openFilePicker() {
-        // Сюда копируем соответствующий код с сайта
         FilePickerBuilder.instance
             .setMaxCount(1)
             .setActivityTheme(R.style.Theme_CriminalIntent)

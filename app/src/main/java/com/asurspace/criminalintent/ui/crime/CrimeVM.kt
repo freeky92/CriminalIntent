@@ -2,19 +2,24 @@ package com.asurspace.criminalintent.ui.crime
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CrimeVM(
-    private val crimeId: Long,
-    private val crimeDB: CrimesRepository
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel(),
     LifecycleEventObserver {
 
-    private val _crimeLD = MutableLiveData<Crime>()
+    private val crimeDB: CrimesRepository = Repository.crimesRepo
+
+    private var _crimeId = savedStateHandle.getLiveData<Long?>(CrimesTable.COLUMN_ID)
+
+    private val _crimeLD = MutableLiveData<Crime?>()
     val crimeLD = _crimeLD.share()
 
     private val _solvedLD = MutableLiveData<Boolean?>()
@@ -35,6 +40,12 @@ class CrimeVM(
     private val _imageUriLD = MutableLiveData<String?>()
     val imageUriLD = _imageUriLD.share()
 
+    fun setCrimeId(id: Long?) {
+        if (_crimeId.value != id) {
+            _crimeId.value = id
+        }
+    }
+
     private fun getCrime(crimeId: Long) {
         if (_crimeLD.value == null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -45,7 +56,7 @@ class CrimeVM(
 
     fun remove() {
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.deleteCrime(crimeId)
+            crimeDB.deleteCrime(_crimeId.value ?: 0)
         }
     }
 
@@ -58,6 +69,7 @@ class CrimeVM(
 
     fun setFields() {
         with(crimeLD.value) {
+            _crimeId.value = this?.id
             _solvedLD.value = this?.solved
             _titleLD.value = this?.title
             _suspectLD.value = this?.suspect
@@ -112,10 +124,19 @@ class CrimeVM(
         }
     }
 
+    private fun initSSH() {
+        if (!savedStateHandle.contains(CrimesTable.COLUMN_ID)
+            || savedStateHandle.get<Long>(CrimesTable.COLUMN_ID) != _crimeId.value
+        ) {
+            savedStateHandle.set(CrimesTable.COLUMN_ID, _crimeId.value)
+        }
+    }
+
+
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
-                getCrime(crimeId)
+                getCrime(_crimeId.value ?: 0)
                 Log.i("vmOnCreate", solvedLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {
@@ -131,12 +152,13 @@ class CrimeVM(
 
             }
             Lifecycle.Event.ON_DESTROY -> {
-                Log.i("vmOnDestroy", solvedLD.value.toString())
+                initSSH()
             }
             Lifecycle.Event.ON_ANY -> {
 
             }
         }
     }
+
 
 }

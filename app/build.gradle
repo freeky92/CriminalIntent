@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -89,7 +90,7 @@ dependencies {
     def lottieVersion = "4.2.2"
     def dagger2Version = "2.40.5"
     def okhttp3Version = "4.9.3"
-
+    def hiltVersion = "2.38.1"
     def compose_version = "1.0.5"
 
     // J.P. COMPOSE
@@ -162,6 +163,11 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger2Version"
     kapt "com.google.dagger:dagger-compiler:$dagger2Version"
 
+    // file picker
     implementation 'com.droidninja:filepicker:2.2.5'
+
+    // hilt
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-compiler:$hiltVersion"
 
 }
