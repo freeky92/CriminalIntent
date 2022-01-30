@@ -20,6 +20,7 @@ import com.asurspace.criminalintent.util.UtilPermissions
 import com.asurspace.criminalintent.util.dateFormat
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
+import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
@@ -71,7 +72,8 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         binding.setImageButton.setOnClickListener {
 
             if (!UtilPermissions.hasPermissions(requireContext(), *UtilPermissions.PERMISSIONS)) {
-                ActivityCompat.requestPermissions(requireActivity(),
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
                     UtilPermissions.PERMISSIONS,
                     UtilPermissions.PERMISSION_ALL
                 )
@@ -127,15 +129,14 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            FilePickerConst.REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-
+            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)
                     ?.let { photoPaths.addAll(it) }
             }
-            FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
+            /*REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
                 data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_DOCS)
                     ?.let { docPaths.addAll(it) }
-            }
+            }*/
         }
         if (photoPaths.isNotEmpty()) {
             viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())

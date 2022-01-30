@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +20,7 @@ import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
 import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.UtilPermissions
 import com.asurspace.criminalintent.util.viewModelCreator
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -26,7 +28,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
-    private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
+    private val viewModel by viewModelCreator(this) { CrimesListVM(Repository.crimesRepo) }
     private lateinit var crimesRecyclerAdapter: CrimesRecyclerAdapter
 
     private var _binding: CrimesListFragmentBinding? = null
@@ -54,7 +56,16 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         lifecycle.addObserver(viewModel)
 
         listenerInitialization()
-        subscribeOnLiveData()
+
+        if (!UtilPermissions.hasPermissions(requireContext(), *UtilPermissions.PERMISSIONS)) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                UtilPermissions.PERMISSIONS,
+                UtilPermissions.PERMISSION_ALL
+            )
+        } else {
+            subscribeOnLiveData()
+        }
     }
 
 

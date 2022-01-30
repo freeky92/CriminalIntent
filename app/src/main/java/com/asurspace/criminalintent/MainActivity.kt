@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Repository.init(applicationContext)
         super.onCreate(savedInstanceState)
-        
+
         binding = MainActivityBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         setSupportActionBar(binding.actionBar)

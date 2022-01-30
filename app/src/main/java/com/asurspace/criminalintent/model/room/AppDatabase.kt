@@ -6,7 +6,7 @@ import com.asurspace.criminalintent.model.crimes.room.CrimesDao
 import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
 
 @Database(
-    version = 2,
+    version = 1,
     entities = [CrimeDbEntity::class]
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -24,9 +24,7 @@ import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.dateFormat
 import com.asurspace.criminalintent.util.viewModelCreator
 import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst.KEY_SELECTED_DOCS
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
-import droidninja.filepicker.FilePickerConst.REQUEST_CODE_DOC
 import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
@@ -35,7 +33,7 @@ import java.util.*
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private val sharedViewModel by activityViewModels<SharedVM>()
-    private val viewModel by viewModelCreator {
+    private val viewModel by viewModelCreator(this) {
         CrimeVM(
             sharedViewModel.crimeId.value ?: 0,
             Repository.crimesRepo
@@ -170,10 +168,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)
                     ?.let { photoPaths.addAll(it) }
-            }
-            REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
-                data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_DOCS)
-                    ?.let { docPaths.addAll(it) }
             }
         }
         if (photoPaths.isNotEmpty()) {

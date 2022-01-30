@@ -8,7 +8,10 @@ import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrimeVM(private val crimeId: Long, private val crimeDB: CrimesRepository) : ViewModel(),
+class CrimeVM(
+    private val crimeId: Long,
+    private val crimeDB: CrimesRepository
+) : ViewModel(),
     LifecycleEventObserver {
 
     private val _crimeLD = MutableLiveData<Crime>()

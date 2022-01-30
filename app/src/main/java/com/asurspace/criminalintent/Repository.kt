@@ -12,7 +12,8 @@ object Repository {
     // метод создает RoomDb
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "database.db")
-            //.createFromAssert("initial_database.db")
+            //.createFromAsset("init_database.db")
+            //.fallbackToDestructiveMigration()
             .build()
     }
 
