@@ -35,9 +35,9 @@ val dateFormat = SimpleDateFormat("HH:mm:ss EEEE dd.MM.yyyy ", Locale.getDefault
 const val RESULT = "RESULT"
 const val CRIME = "CRIME"
 const val CRIMELIST = "CRIMELIST"
-
 const val PREVIEW = "PREVIEW"
 const val IMAGE = "IMAGE"
+const val IMAGE_CODE = 103
 
 object CrimesTable {
     const val TABLE_NAME = "crimes"

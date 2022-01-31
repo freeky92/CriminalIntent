@@ -5,12 +5,13 @@ import androidx.lifecycle.*
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.util.CRIME
 import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrimeVM(
+class CrimeVM( // TODO need fix
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel(),
     LifecycleEventObserver {
@@ -19,7 +20,7 @@ class CrimeVM(
 
     private var _crimeId = savedStateHandle.getLiveData<Long?>(CrimesTable.COLUMN_ID)
 
-    private val _crimeLD = MutableLiveData<Crime?>()
+    private val _crimeLD = savedStateHandle.getLiveData<Crime?>(CRIME)
     val crimeLD = _crimeLD.share()
 
     private val _solvedLD = MutableLiveData<Boolean?>()
@@ -125,10 +126,10 @@ class CrimeVM(
     }
 
     private fun initSSH() {
-        if (!savedStateHandle.contains(CrimesTable.COLUMN_ID)
-            || savedStateHandle.get<Long>(CrimesTable.COLUMN_ID) != _crimeId.value
+        if (!savedStateHandle.contains(CRIME)
+            || savedStateHandle.get<Crime>(CRIME) != _crimeLD.value
         ) {
-            savedStateHandle.set(CrimesTable.COLUMN_ID, _crimeId.value)
+            savedStateHandle.set(CRIME, _crimeLD.value)
         }
     }
 
@@ -137,25 +138,30 @@ class CrimeVM(
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 getCrime(_crimeId.value ?: 0)
-                Log.i("vmOnCreate", solvedLD.value.toString())
+                Log.i("vmOnCreate", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {
-
+                Log.i("vmOnStart", crimeLD.value.toString())
+                Log.i("vmOnStart", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_RESUME -> {
-
+                Log.i("vmOnResume", crimeLD.value.toString())
+                Log.i("vmOnResume", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_PAUSE -> {
                 update()
+                Log.i("vmOnCreate", crimeLD.value.toString())
+                Log.i("vmOnCreate", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_STOP -> {
+                Log.i("vmOnStop", crimeLD.value.toString())
 
             }
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
+                Log.i("vmOnDestroy", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_ANY -> {
-
             }
         }
     }

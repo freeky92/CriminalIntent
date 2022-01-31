@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -18,13 +20,10 @@ import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.model.SharedVM
-import com.asurspace.criminalintent.util.FragmentNameList
-import com.asurspace.criminalintent.util.IMAGE
-import com.asurspace.criminalintent.util.PREVIEW
+import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSION_ALL
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
-import com.asurspace.criminalintent.util.dateFormat
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
@@ -34,6 +33,14 @@ import java.util.*
 
 @DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
+
+
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == IMAGE_CODE) {
+                viewModel.setUpdatedImage("")
+            }
+        }
 
     private val sharedViewModel by activityViewModels<SharedVM>()
 
@@ -107,10 +114,22 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         binding.setImageButton.setOnClickListener {
+            val i = Intent(Intent.ACTION_GET_CONTENT)
+            with(i) {
+                type = "*/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+            }
 
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, PERMISSION_ALL)
             } else {
+                /*val option = view?.let { view ->
+                    ActivityOptionsCompat
+                        .makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+                }
+
+                resultLauncher.launch(Intent.createChooser(i, "Select File"), option)*/
+
                 openFilePicker()
             }
 
@@ -125,10 +144,13 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         binding.crimeIv.setOnClickListener {
-            (activity as MainActivity).openFragment(PreviewFragment())
-            setFragmentResult(PREVIEW,
-                bundleOf(IMAGE to (viewModel.imageUriLD.value ?: ""))
-            )
+            if ((viewModel.imageUriLD.value ?: "").isNotEmpty()) {
+                (activity as MainActivity).openFragment(PreviewFragment())
+                setFragmentResult(
+                    PREVIEW,
+                    bundleOf(IMAGE to (viewModel.imageUriLD.value ?: ""))
+                )
+            }
         }
 
     }

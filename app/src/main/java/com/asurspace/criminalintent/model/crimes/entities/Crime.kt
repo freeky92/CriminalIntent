@@ -42,6 +42,10 @@ data class Crime(
         )
     }
 
+    override fun toString(): String {
+        return super.toString()
+            .plus("$id, $solved, $title, $suspect, $description, $creationDate, $imageURI.")
+    }
 }
 
 @Parcelize
