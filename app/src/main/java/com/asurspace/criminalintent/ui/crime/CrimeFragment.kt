@@ -12,16 +12,20 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.model.SharedVM
 import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.IMAGE
+import com.asurspace.criminalintent.util.PREVIEW
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSION_ALL
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.dateFormat
+import com.asurspace.criminalintent.util.ui.PreviewFragment
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
 import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
@@ -118,6 +122,13 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
                 showSnackBar(resources.getString(R.string.msg_crime_removed))
                 onBackPressed()
             }
+        }
+
+        binding.crimeIv.setOnClickListener {
+            (activity as MainActivity).openFragment(PreviewFragment())
+            setFragmentResult(PREVIEW,
+                bundleOf(IMAGE to (viewModel.imageUriLD.value ?: ""))
+            )
         }
 
     }

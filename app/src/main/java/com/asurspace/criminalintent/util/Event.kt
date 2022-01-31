@@ -36,6 +36,9 @@ const val RESULT = "RESULT"
 const val CRIME = "CRIME"
 const val CRIMELIST = "CRIMELIST"
 
+const val PREVIEW = "PREVIEW"
+const val IMAGE = "IMAGE"
+
 object CrimesTable {
     const val TABLE_NAME = "crimes"
 
