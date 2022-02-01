@@ -2,23 +2,19 @@ package com.asurspace.criminalintent.ui.crime
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.CRIME
-import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrimeVM( // TODO need fix
-    private val savedStateHandle: SavedStateHandle
-) : ViewModel(),
-    LifecycleEventObserver {
+class CrimeVM(
+    private val savedStateHandle: SavedStateHandle,
+    private val crimeDB: CrimesRepository
+) : ViewModel(), LifecycleEventObserver {
 
-    private val crimeDB: CrimesRepository = Repository.crimesRepo
-
-    private var _crimeId = savedStateHandle.getLiveData<Long?>(CrimesTable.COLUMN_ID)
+    private var _crimeId = MutableLiveData<Long?>()
 
     private val _crimeLD = savedStateHandle.getLiveData<Crime?>(CRIME)
     val crimeLD = _crimeLD.share()
@@ -41,23 +37,22 @@ class CrimeVM( // TODO need fix
     private val _imageUriLD = MutableLiveData<String?>()
     val imageUriLD = _imageUriLD.share()
 
+    private val _isRemoved = MutableLiveData<Int>()
+    val isRemoved = _isRemoved.share()
+
+    fun setCrime(crime: Crime?) {
+        _crimeLD.value = crime
+    }
+
     fun setCrimeId(id: Long?) {
         if (_crimeId.value != id) {
             _crimeId.value = id
         }
     }
 
-    private fun getCrime(crimeId: Long) {
-        if (_crimeLD.value == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                _crimeLD.postValue(crimeDB.findCrimeById(crimeId))
-            }
-        }
-    }
-
     fun remove() {
         viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.deleteCrime(_crimeId.value ?: 0)
+            _isRemoved.postValue(crimeDB.deleteCrime(_crimeId.value ?: 0))
         }
     }
 
@@ -137,7 +132,6 @@ class CrimeVM( // TODO need fix
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
-                getCrime(_crimeId.value ?: 0)
                 Log.i("vmOnCreate", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {

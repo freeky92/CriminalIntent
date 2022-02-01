@@ -11,13 +11,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
-import com.asurspace.criminalintent.util.FragmentNameList
-import com.asurspace.criminalintent.util.UtilPermissions
-import com.asurspace.criminalintent.util.dateFormat
+import com.asurspace.criminalintent.util.*
+import com.asurspace.criminalintent.util.ui.PreviewFragment
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
@@ -29,11 +29,11 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private val viewModel by viewModels<CreateCrimeVM>()
 
-    // private var docPaths = ArrayList<Any>()
     private var photoPaths = ArrayList<Any>()
 
     private var _binding: CreateCrimeFragmentBinding? = null
     private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -105,6 +105,13 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
             }
         }
 
+        binding.crimeIv.setOnClickListener {
+            if ((viewModel.imageUriLD.value ?: "").isNotEmpty()) {
+                (activity as MainActivity).openFragment(PreviewFragment())
+                setImageResult(viewModel.imageUriLD.value ?: "")
+            }
+        }
+
     }
 
     private fun subscribeOnLD() {
@@ -113,13 +120,12 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
                 binding.crimeIv.setImageURI(Uri.parse(it))
             }
         }
-
     }
 
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CREATE_CRIME_FRAGMENT)
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CREATE_CRIME_FRAGMENT)
         )
     }
 
@@ -146,15 +152,18 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
                 data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)
                     ?.let { photoPaths.addAll(it) }
             }
-            /*REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
-                data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_DOCS)
-                    ?.let { docPaths.addAll(it) }
-            }*/
         }
         if (photoPaths.isNotEmpty()) {
             viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
             photoPaths.clear()
         }
+    }
+
+    private fun setImageResult(uri: String){
+        setFragmentResult(
+            PREVIEW,
+            bundleOf(IMAGE to (uri))
+        )
     }
 
 }

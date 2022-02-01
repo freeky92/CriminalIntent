@@ -7,19 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
+import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
-import com.asurspace.criminalintent.model.SharedVM
+import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSION_ALL
@@ -34,28 +33,12 @@ import java.util.*
 @DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
+    private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
 
-    private val resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == IMAGE_CODE) {
-                viewModel.setUpdatedImage("")
-            }
-        }
-
-    private val sharedViewModel by activityViewModels<SharedVM>()
-
-    private val viewModel by viewModels<CrimeVM>()
-
-    private var docPaths = ArrayList<Any>()
     private var photoPaths = ArrayList<Any>()
 
     private var _binding: CrimeFragmentBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.setCrimeId(sharedViewModel.crimeId.value)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,7 +60,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     }
 
     private fun restoreValue() {
-        binding
 
         binding.checkboxSolved.isChecked = viewModel.solvedLD.value ?: false
 
@@ -114,42 +96,21 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         binding.setImageButton.setOnClickListener {
-            val i = Intent(Intent.ACTION_GET_CONTENT)
-            with(i) {
-                type = "*/*"
-                addCategory(Intent.CATEGORY_OPENABLE)
-            }
-
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, PERMISSION_ALL)
             } else {
-                /*val option = view?.let { view ->
-                    ActivityOptionsCompat
-                        .makeClipRevealAnimation(view, 0, 0, view.width, view.height)
-                }
-
-                resultLauncher.launch(Intent.createChooser(i, "Select File"), option)*/
-
                 openFilePicker()
             }
-
         }
 
         binding.removeTb.setOnClickListener {
             viewModel.remove()
-            with(activity as MainActivity) {
-                showSnackBar(resources.getString(R.string.msg_crime_removed))
-                onBackPressed()
-            }
         }
 
         binding.crimeIv.setOnClickListener {
             if ((viewModel.imageUriLD.value ?: "").isNotEmpty()) {
                 (activity as MainActivity).openFragment(PreviewFragment())
-                setFragmentResult(
-                    PREVIEW,
-                    bundleOf(IMAGE to (viewModel.imageUriLD.value ?: ""))
-                )
+                setImageResult(viewModel.imageUriLD.value ?: "")
             }
         }
 
@@ -168,12 +129,19 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             }
         }
 
+        viewModel.isRemoved.observe(viewLifecycleOwner) {
+            with(activity as MainActivity) {
+                showSnackBar(resources.getString(R.string.msg_crime_removed))
+                onBackPressed()
+            }
+        }
+
     }
 
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CRIME_FRAGMENT)
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CRIME_FRAGMENT)
         )
     }
 
@@ -204,6 +172,21 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         if (photoPaths.isNotEmpty()) {
             viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
             photoPaths.clear()
+        }
+    }
+
+    private fun setImageResult(uri: String) {
+        setFragmentResult(
+            PREVIEW,
+            bundleOf(IMAGE to (uri))
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setFragmentResultListener(TO_CRIME_FRAGMENT) { _, b ->
+            val result = b.get(CRIME)
+            viewModel.setCrime(result as Crime)
         }
     }
 

@@ -17,7 +17,7 @@ interface CrimesRepository {
 
     suspend fun updateCrime(crime: Crime?)
 
-    suspend fun deleteCrime(crimeId: Long)
+    suspend fun deleteCrime(crimeId: Long): Int
 
     suspend fun clearCrimes()
 

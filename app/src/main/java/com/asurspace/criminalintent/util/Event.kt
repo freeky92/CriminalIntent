@@ -16,12 +16,6 @@ class Event<T>(
 
 }
 
-object FragmentNameList {
-    const val CRIMES_LIST_FRAGMENT = "CrimesListFragment"
-    const val CRIME_FRAGMENT = "CrimeFragment"
-    const val CREATE_CRIME_FRAGMENT = "CreateCrimeFragment"
-}
-
 // --- helper methods / aliases
 
 /**
@@ -32,12 +26,17 @@ fun <T> MutableLiveData<T>.share(): LiveData<T> = this
 @SuppressLint("ConstantLocale")
 val dateFormat = SimpleDateFormat("HH:mm:ss EEEE dd.MM.yyyy ", Locale.getDefault())
 
-const val RESULT = "RESULT"
+
+const val CRIMES_LIST_FRAGMENT = "CrimesListFragment"
+const val CRIME_FRAGMENT = "CrimeFragment"
+const val CREATE_CRIME_FRAGMENT = "CreateCrimeFragment"
+const val PREVIEW_FRAGMENT = "PreviewFragment"
+
 const val CRIME = "CRIME"
-const val CRIMELIST = "CRIMELIST"
+const val TO_CRIME_FRAGMENT = "TO_CRIME_FRAGMENT"
 const val PREVIEW = "PREVIEW"
 const val IMAGE = "IMAGE"
-const val IMAGE_CODE = 103
+const val PICK_IMAGE_CODE = 103
 
 object CrimesTable {
     const val TABLE_NAME = "crimes"

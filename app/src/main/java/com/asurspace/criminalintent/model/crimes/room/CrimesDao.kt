@@ -23,6 +23,9 @@ interface CrimesDao {
     suspend fun updateCrime(crimeDbEntity: CrimeDbEntity)
 
     @Query("DELETE FROM crimes WHERE id =:id")
-    suspend fun deleteCrime(id: Long)
+    suspend fun deleteCrime(id: Long): Int
+
+    @Query("DELETE FROM crimes")
+    suspend fun clearTable()
 
 }

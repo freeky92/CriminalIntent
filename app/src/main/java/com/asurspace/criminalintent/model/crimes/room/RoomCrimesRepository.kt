@@ -26,11 +26,11 @@ class RoomCrimesRepository(private val crimesDao: CrimesDao) : CrimesRepository 
         crime?.let { crimesDao.updateCrime(it.toCrimeDbEntity()) }
     }
 
-    override suspend fun deleteCrime(crimeId: Long) {
+    override suspend fun deleteCrime(crimeId: Long): Int {
         return crimesDao.deleteCrime(crimeId)
     }
 
     override suspend fun clearCrimes() {
-        TODO("Not yet implemented")
+        return crimesDao.clearTable()
     }
 }
