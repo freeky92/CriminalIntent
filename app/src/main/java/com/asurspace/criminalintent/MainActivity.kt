@@ -14,7 +14,10 @@ import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
 import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
-import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.CREATE_CRIME_FRAGMENT
+import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
+import com.asurspace.criminalintent.util.CRIME_FRAGMENT
+import com.asurspace.criminalintent.util.PREVIEW_FRAGMENT
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Repository.init(applicationContext)
         super.onCreate(savedInstanceState)
-        
+
         binding = MainActivityBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         setSupportActionBar(binding.actionBar)
@@ -93,6 +96,16 @@ class MainActivity : AppCompatActivity() {
     private fun clearBackStack() =
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1) {
+            super.onBackPressed()
+        } else {
+            finish()
+        }
+    }
+
+    // todo PB
+
     fun showSnackBar(
         message: String,
         linkAction: Pair<String, String>? = null,
@@ -128,41 +141,54 @@ class MainActivity : AppCompatActivity() {
         snackBar.show()
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            super.onBackPressed()
-        } else {
-            finish()
-        }
-    }
-
     private fun listenNavigationEvents() {
         supportFragmentManager.setFragmentResultListener(NAVIGATION_EVENT, this) { _, bundle ->
 
             when (bundle.get(NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY) as String) {
 
                 // on crimes list fragment
-                FragmentNameList.CRIMES_LIST_FRAGMENT -> {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                    supportActionBar?.title = resources.getString(R.string.crimes_list)
+                CRIMES_LIST_FRAGMENT -> {
+                    supportActionBar?.let {
+                        it.setDisplayHomeAsUpEnabled(false)
+                        it.title = resources.getString(R.string.crimes_list)
+                        if (!it.isShowing) {
+                            it.show()
+                        }
+                    }
                     addItem.isVisible = true
                     showSubtitle.isVisible = true
                 }
 
                 // on crime fragment
-                FragmentNameList.CRIME_FRAGMENT -> {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                    supportActionBar?.title = resources.getString(R.string.crime_text)
+                CRIME_FRAGMENT -> {
+
+                    supportActionBar?.let {
+                        it.setDisplayHomeAsUpEnabled(true)
+                        it.title = resources.getString(R.string.crime_text)
+                        if (!it.isShowing) {
+                            it.show()
+                        }
+                    }
                     addItem.isVisible = true
                     showSubtitle.isVisible = false
                 }
 
                 // on crimes list fragment
-                FragmentNameList.CREATE_CRIME_FRAGMENT -> {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                    supportActionBar?.title = resources.getString(R.string.create_crime)
+                CREATE_CRIME_FRAGMENT -> {
+                    supportActionBar?.let {
+                        it.setDisplayHomeAsUpEnabled(true)
+                        it.title = resources.getString(R.string.create_crime)
+                        if (!it.isShowing) {
+                            it.show()
+                        }
+                    }
                     addItem.isVisible = false
                     showSubtitle.isVisible = false
+                }
+
+                // on PREVIEW
+                PREVIEW_FRAGMENT -> {
+                    supportActionBar?.hide()
                 }
 
                 else -> {

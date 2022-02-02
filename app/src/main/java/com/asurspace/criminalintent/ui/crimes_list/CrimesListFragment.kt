@@ -1,44 +1,48 @@
 package com.asurspace.criminalintent.ui.crimes_list
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
-import com.asurspace.criminalintent.model.SharedVM
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract
+import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
-import com.asurspace.criminalintent.util.FragmentNameList
+import com.asurspace.criminalintent.util.CRIME
+import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
+import com.asurspace.criminalintent.util.TO_CRIME_FRAGMENT
 import com.asurspace.criminalintent.util.viewModelCreator
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
-    private val sharedViewModel by activityViewModels<SharedVM>()
+    private val launchSinglePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                subscribeOnLiveData()
+            } else {
+                (activity as MainActivity).showSnackBar("STORAGE permission needed!")
+            }
+        }
+
     private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
+
     private lateinit var crimesRecyclerAdapter: CrimesRecyclerAdapter
 
     private var _binding: CrimesListFragmentBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        //setFragmentResultListener() todo
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +59,16 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         lifecycle.addObserver(viewModel)
 
         listenerInitialization()
-        subscribeOnLiveData()
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            subscribeOnLiveData()
+        } else {
+            launchSinglePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
     }
 
 
@@ -69,13 +82,13 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     }
 
     private fun subscribeOnLiveData() {
-        viewModel.crimeListLD.observe(viewLifecycleOwner, { crimes ->
+        viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
-                sharedViewModel.setCrimeId(crime.id)
+                setCrimeToResult(crime)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
-        })
+        }
     }
 
     override fun onResume() {
@@ -83,33 +96,22 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         fragmentResumeResult()
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.i("onPause", "")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.i("onStop", "")
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i("onDESTROY", "")
         _binding = null
     }
 
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                                   // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to FragmentNameList.CRIMES_LIST_FRAGMENT)
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CRIMES_LIST_FRAGMENT)
         )
     }
 
-    private fun setResult(crimeId: Long?) {
+    private fun setCrimeToResult(crime: Crime) {
         setFragmentResult(
-            FragmentNameList.CRIME_FRAGMENT,
-            bundleOf(AppSQLiteContract.CrimesTable.COLUMN_ID to crimeId)
+            TO_CRIME_FRAGMENT,
+            bundleOf(CRIME to crime)
         )
     }
 

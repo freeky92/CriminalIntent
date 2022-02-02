@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.sqlite.AppSQLiteContract.CrimesTable
+import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.share
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,11 +56,11 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
             crimeDB.addCrime(
                 Crime(
                     id = null,
-                    solved = 0,
+                    solved = false,
                     title = titleLD.value,
                     suspect = suspectLD.value,
-                    desciption = descriptionLD.value,
-                    creation_date = System.currentTimeMillis(),
+                    description = descriptionLD.value,
+                    creationDate = System.currentTimeMillis(),
                     imageURI = imageUriLD.value
                 )
             )
@@ -115,7 +115,6 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
                 Log.i("destroy", "CCVM")
-
             }
             Lifecycle.Event.ON_ANY -> {
             }

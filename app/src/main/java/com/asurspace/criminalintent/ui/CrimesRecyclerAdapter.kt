@@ -1,7 +1,6 @@
 package com.asurspace.criminalintent.ui
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -13,6 +12,7 @@ import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -57,7 +57,7 @@ class CrimesRecyclerAdapter(
 
         fun setCrime(crime: Crime) {
             this.crime = crime
-            binding.rvSolvedCb.isChecked = (crime.solved ?: 0) == 1
+            binding.rvSolvedCb.isChecked = crime.solved ?: false
             binding.crimeTitle.text = crime.title
             binding.suspect.text = crime.suspect
             if (crime.imageURI != null) {
@@ -67,7 +67,7 @@ class CrimesRecyclerAdapter(
             }
 
             binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
-                changeState(b, crime)
+                crime.id?.let { changeState(it, b) }
             }
 
             binding.root.setOnClickListener {
@@ -95,6 +95,7 @@ class CrimesRecyclerAdapter(
                 when (it.itemId) {
                     ID_REMOVE -> {
                         removeItem(crime?.id ?: 0)
+
                     }
                 }
                 return@setOnMenuItemClickListener true
@@ -104,17 +105,9 @@ class CrimesRecyclerAdapter(
         }
 
         @DelicateCoroutinesApi
-        private fun changeState(solved: Boolean, crime: Crime) {
-            val c = crime.toMutableCrime()
-
-            if (solved) {
-                c.solved = 1
-            } else {
-                c.solved = 0
-            }
-            Log.i("changeState", "$c $solved")
+        private fun changeState(crimeId: Long, solved: Boolean) {
             GlobalScope.launch(Dispatchers.IO) {
-                crimeDB.updateCrime(crime.id, c.toCrime())
+                crimeDB.setSolved(SetSolvedTuples(crimeId, solved))
             }
         }
 
