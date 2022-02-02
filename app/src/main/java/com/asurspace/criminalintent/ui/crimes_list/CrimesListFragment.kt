@@ -1,9 +1,12 @@
 package com.asurspace.criminalintent.ui.crimes_list
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -16,11 +19,23 @@ import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
-import com.asurspace.criminalintent.util.*
+import com.asurspace.criminalintent.util.CRIME
+import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
+import com.asurspace.criminalintent.util.TO_CRIME_FRAGMENT
+import com.asurspace.criminalintent.util.viewModelCreator
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
+
+    private val launchSinglePermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                subscribeOnLiveData()
+            } else {
+                (activity as MainActivity).showSnackBar("STORAGE permission needed!")
+            }
+        }
 
     private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
 
@@ -45,14 +60,14 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
         listenerInitialization()
 
-        if (!UtilPermissions.hasPermissions(requireContext(), *UtilPermissions.PERMISSIONS)) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                UtilPermissions.PERMISSIONS,
-                UtilPermissions.PERMISSION_ALL
-            )
-        } else {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             subscribeOnLiveData()
+        } else {
+            launchSinglePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -69,7 +84,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     private fun subscribeOnLiveData() {
         viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
             crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
-                setResult(crime)
+                setCrimeToResult(crime)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
             binding.crimeListRv.adapter = crimesRecyclerAdapter
@@ -93,7 +108,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         )
     }
 
-    private fun setResult(crime: Crime) {
+    private fun setCrimeToResult(crime: Crime) {
         setFragmentResult(
             TO_CRIME_FRAGMENT,
             bundleOf(CRIME to crime)

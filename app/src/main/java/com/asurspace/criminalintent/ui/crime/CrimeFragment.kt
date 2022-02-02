@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -21,7 +21,6 @@ import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
-import com.asurspace.criminalintent.util.UtilPermissions.PERMISSION_ALL
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import droidninja.filepicker.FilePickerBuilder
@@ -32,6 +31,21 @@ import java.util.*
 
 @DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
+
+    private val launchMPermissionsRequest =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val neededList = emptyList<String>().toMutableList()
+            permissions.entries.forEach {
+                if (!it.value) {
+                    neededList.add(it.key)
+                }
+            }
+            if (neededList.isEmpty()) {
+                openFilePicker()
+            } else {
+                (activity as MainActivity).showSnackBar("$neededList")
+            }
+        }
 
     private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
 
@@ -97,7 +111,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
         binding.setImageButton.setOnClickListener {
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
-                ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, PERMISSION_ALL)
+                launchMPermissionsRequest.launch(PERMISSIONS)
             } else {
                 openFilePicker()
             }

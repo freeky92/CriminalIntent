@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -17,6 +17,7 @@ import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.util.*
+import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
@@ -26,6 +27,21 @@ import java.util.*
 
 @DelicateCoroutinesApi
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
+
+    private val launchMPermissionsRequest =
+        registerForActivityResult(RequestMultiplePermissions()) { permissions ->
+            val neededList = emptyList<String>().toMutableList()
+            permissions.entries.forEach {
+                if (!it.value) {
+                    neededList.add(it.key)
+                }
+            }
+            if (neededList.isEmpty()) {
+                openFilePicker()
+            } else {
+                (activity as MainActivity).showSnackBar("$neededList")
+            }
+        }
 
     private val viewModel by viewModels<CreateCrimeVM>()
 
@@ -84,17 +100,11 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
 
         binding.setImageButton.setOnClickListener {
-
-            if (!UtilPermissions.hasPermissions(requireContext(), *UtilPermissions.PERMISSIONS)) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    UtilPermissions.PERMISSIONS,
-                    UtilPermissions.PERMISSION_ALL
-                )
+            if (!UtilPermissions.hasPermissions(requireContext(), *PERMISSIONS)) {
+                launchMPermissionsRequest.launch(PERMISSIONS)
             } else {
                 openFilePicker()
             }
-
         }
 
         binding.createTb.setOnClickListener {
@@ -159,7 +169,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
     }
 
-    private fun setImageResult(uri: String){
+    private fun setImageResult(uri: String) {
         setFragmentResult(
             PREVIEW,
             bundleOf(IMAGE to (uri))
