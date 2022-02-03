@@ -2,13 +2,12 @@ package com.asurspace.criminalintent
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
@@ -108,37 +107,48 @@ class MainActivity : AppCompatActivity() {
 
     fun showSnackBar(
         message: String,
-        linkAction: Pair<String, String>? = null,
-        warpOnUrlOnClick: String? = null,
         textAlignment: Int = View.TEXT_ALIGNMENT_CENTER
     ) {
         val snackBar =
             Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
                 .setBackgroundTint(Color.WHITE)
                 .setTextColor(Color.DKGRAY)
-
-        // Настройка текста
-        val sBarPar = snackBar.view.findViewById<TextView>(R.id.snackbar_text)
-        sBarPar.textSize = 12f
-
-        sBarPar.textAlignment = textAlignment
-
-
-        if (linkAction != null) {
-            snackBar.setAction(linkAction.first) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(linkAction.second)))
-            }.setActionTextColor(Color.BLUE)
+        snackBar.view.setOnClickListener {
+            snackBar.dismiss()
         }
-
-        // Настройка действие по клику на бар
-        if (warpOnUrlOnClick != null) {
-            snackBar.view.setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(warpOnUrlOnClick)))
-            }
-        } else {
-            snackBar.view.setOnClickListener { snackBar.dismiss() }
+        // Настройка текста
+        val sBarPar = snackBar.view.findViewById<AppCompatTextView>(R.id.snackbar_text)
+        with(sBarPar) {
+            textSize = 12f
+            sBarPar.textAlignment = textAlignment
         }
         snackBar.show()
+    }
+
+    fun showDialog(
+        message: String,
+        positiveActionBTitle: String,
+        intent: Intent
+    ) {
+        val snackBar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_INDEFINITE)
+                .setBackgroundTint(Color.WHITE)
+                .setTextColor(Color.BLACK)
+
+        // Настройка текста
+        val sBarPar = snackBar.view.findViewById<AppCompatTextView>(R.id.snackbar_text)
+        with(sBarPar) {
+            textSize = 12f
+        }
+        with(snackBar) {
+            setAction(positiveActionBTitle) {
+                startActivity(intent)
+            }
+            view.setOnClickListener {
+                dismiss()
+            }
+            show()
+        }
     }
 
     private fun listenNavigationEvents() {
@@ -199,5 +209,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
 
 }
