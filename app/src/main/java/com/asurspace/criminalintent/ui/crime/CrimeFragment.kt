@@ -128,7 +128,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
         binding.crimeIv.setOnClickListener {
             val uri = viewModel.imageUriLD.value.toString()
-            if (uri.isNotEmpty()) {
+            if (uri != "null") {
                 (activity as MainActivity).openFragment(PreviewFragment())
                 setImageResult(uri)
             }

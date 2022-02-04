@@ -35,7 +35,7 @@ class CrimeVM(
     private val _cDateLD = MutableLiveData<Long?>()
     val cDateLD = _cDateLD.share()
 
-    private val _imageUriLD = MutableLiveData<Uri?>()
+    private val _imageUriLD = MutableLiveData<Uri>()
     val imageUriLD = _imageUriLD.share()
 
     private val _isRemoved = MutableLiveData<Int>()
@@ -100,7 +100,7 @@ class CrimeVM(
         }
     }
 
-    fun setUpdatedImage(uri: Uri?) {
+    fun setUpdatedImage(uri: Uri) {
         if (imageUriLD.value != uri) {
             _imageUriLD.value = uri
         }
