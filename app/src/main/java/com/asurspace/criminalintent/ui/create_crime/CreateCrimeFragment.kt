@@ -2,8 +2,10 @@ package com.asurspace.criminalintent.ui.create_crime
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,20 +30,10 @@ import java.util.*
 @DelicateCoroutinesApi
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
-    private val launchMPermissionsRequest =
-        registerForActivityResult(RequestMultiplePermissions()) { permissions ->
-            val neededList = emptyList<String>().toMutableList()
-            permissions.entries.forEach {
-                if (!it.value) {
-                    neededList.add(it.key)
-                }
-            }
-            if (neededList.isEmpty()) {
-                openFilePicker()
-            } else {
-                (activity as MainActivity).showSnackBar("$neededList")
-            }
-        }
+    private val permissionLauncher = registerForActivityResult(
+        RequestMultiplePermissions(),
+        ::onGotPermissionResult
+    )
 
     private val viewModel by viewModels<CreateCrimeVM>()
 
@@ -100,11 +92,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
 
         binding.setImageButton.setOnClickListener {
-            if (!UtilPermissions.hasPermissions(requireContext(), *PERMISSIONS)) {
-                launchMPermissionsRequest.launch(PERMISSIONS)
-            } else {
-                openFilePicker()
-            }
+            permissionLauncher.launch(PERMISSIONS)
         }
 
         binding.createTb.setOnClickListener {
@@ -132,23 +120,6 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
     }
 
-    private fun fragmentResumeResult() {
-        requireActivity().supportFragmentManager.setFragmentResult(
-            MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CREATE_CRIME_FRAGMENT)
-        )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        fragmentResumeResult()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun openFilePicker() {
         FilePickerBuilder.instance
             .setMaxCount(1)
@@ -174,6 +145,55 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
             PREVIEW,
             bundleOf(IMAGE to (uri))
         )
+    }
+
+    private fun onGotPermissionResult(results: Map<String, Boolean>) {
+        if (UtilPermissions.hasPermissions(requireContext(), *results.keys.toTypedArray())) {
+            openFilePicker()
+        } else { //false
+            if (!shouldShowRequestPermissionRationale(results.keys.last())) {
+                askForOpeningSettings()
+            } else {
+                (activity as MainActivity).showSnackBar("Permission needed!")
+            }
+        }
+    }
+
+    private fun askForOpeningSettings() {
+        val startSettingActivityIntent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", context?.packageName, null)
+        )
+        if (context?.packageManager?.resolveActivity(
+                startSettingActivityIntent, PackageManager.MATCH_DEFAULT_ONLY
+            ) == null
+        ) {
+            (activity as MainActivity).showSnackBar("Permission denied forever!")
+        } else {
+            (activity as MainActivity).showDialog(
+                "Our app will not works without this permission, you can add it in settings.",
+                "Settings",
+                startSettingActivityIntent
+            )
+        }
+    }
+
+
+    private fun fragmentResumeResult() {
+        requireActivity().supportFragmentManager.setFragmentResult(
+            MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CREATE_CRIME_FRAGMENT)
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fragmentResumeResult()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

@@ -71,3 +71,17 @@ data class MutableCrime(
         )
     }
 }
+
+object CrimeAdditional {
+    fun emptyCrime(): Crime{
+        return Crime(
+            id = 0,
+            solved = false,
+            title = "",
+            suspect = "",
+            description = "",
+            creationDate = 0,
+            imageURI = ""
+        )
+    }
+}

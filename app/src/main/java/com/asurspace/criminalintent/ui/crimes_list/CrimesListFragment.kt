@@ -39,7 +39,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
 
-    private lateinit var crimesRecyclerAdapter: CrimesRecyclerAdapter
+    private lateinit var crimesAdapter: CrimesRecyclerAdapter
 
     private var _binding: CrimesListFragmentBinding? = null
     private val binding get() = _binding!!
@@ -71,7 +71,6 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         }
     }
 
-
     private fun listenerInitialization() {
         binding.crimeListRv.run {
             layoutManager =
@@ -83,11 +82,11 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private fun subscribeOnLiveData() {
         viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
-            crimesRecyclerAdapter = CrimesRecyclerAdapter(crimes) { crime ->
+            crimesAdapter = CrimesRecyclerAdapter(crimes) { crime ->
                 setCrimeToResult(crime)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
-            binding.crimeListRv.adapter = crimesRecyclerAdapter
+            binding.crimeListRv.adapter = crimesAdapter
         }
     }
 

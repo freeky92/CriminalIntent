@@ -1,6 +1,5 @@
 package com.asurspace.criminalintent.ui.crime
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -10,6 +9,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
@@ -27,34 +27,19 @@ import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import com.google.android.material.snackbar.Snackbar
-import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
-import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
+
 @DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
-
-    /*private val launchMPermissionsRequest =
-        registerForActivityResult(RequestMultiplePermissions()) { permissions ->
-            val neededList = emptyList<String>().toMutableList()
-            permissions.entries.forEach {
-                if (!it.value) {
-                    neededList.add(it.key)
-                }
-            }
-            if (neededList.isEmpty()) {
-                openFilePicker()
-            } else {
-                (activity as MainActivity).showSnackBar("$neededList")
-            }
-        }*/
 
     private val permissionLauncher = registerForActivityResult(
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
+
+    private val pickImageLauncher = registerForActivityResult(OpenDocument(), ::onGotImageResult)
 
     private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
 
@@ -121,8 +106,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             permissionLauncher.launch(PERMISSIONS)
         }
 
-
-
         binding.removeTb.setOnClickListener {
             //(activity as MainActivity)
             val snackBar = Snackbar.make(
@@ -147,9 +130,10 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         binding.crimeIv.setOnClickListener {
-            if ((viewModel.imageUriLD.value ?: "").isNotEmpty()) {
+            val uri = viewModel.imageUriLD.value.toString()
+            if (uri.isNotEmpty()) {
                 (activity as MainActivity).openFragment(PreviewFragment())
-                setImageResult(viewModel.imageUriLD.value ?: "")
+                setImageResult(uri)
             }
         }
 
@@ -163,8 +147,8 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         viewModel.imageUriLD.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                binding.crimeIv.setImageURI(Uri.parse(it))
+            if (it != null) {
+                binding.crimeIv.setImageURI(it)
             }
         }
 
@@ -182,13 +166,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
             bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CRIME_FRAGMENT)
         )
-    }
-
-    private fun openFilePicker() {
-        FilePickerBuilder.instance
-            .setMaxCount(1)
-            .setActivityTheme(R.style.Theme_CriminalIntent)
-            .pickPhoto(this)
     }
 
     private fun askForOpeningSettings() {
@@ -212,7 +189,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private fun onGotPermissionResult(results: Map<String, Boolean>) {
         if (hasPermissions(requireContext(), *results.keys.toTypedArray())) {
-            openFilePicker()
+            pickImageLauncher.launch(arrayOf("image/*"))
         } else { //false
             if (!shouldShowRequestPermissionRationale(results.keys.last())) {
                 askForOpeningSettings()
@@ -222,16 +199,13 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)
-                    ?.let { photoPaths.addAll(it) }
-            }
-        }
-        if (photoPaths.isNotEmpty()) {
-            viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
-            photoPaths.clear()
+    private fun onGotImageResult(uri: Uri?) {
+        uri?.let {
+            context?.contentResolver?.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.setUpdatedImage(uri)
         }
     }
 
