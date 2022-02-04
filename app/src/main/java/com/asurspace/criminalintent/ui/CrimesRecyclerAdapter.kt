@@ -1,5 +1,6 @@
 package com.asurspace.criminalintent.ui
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,13 +15,10 @@ import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
-interface CrimesListener{
+interface CrimesListener {
 
     fun onSelectCrime(crime: Crime)
 
@@ -32,21 +30,15 @@ interface CrimesListener{
 
 @DelicateCoroutinesApi
 class CrimesRecyclerAdapter(
-    private val crimes: List<Crime>?,
+    private var crimes: MutableList<Crime>?,
     private val selectedItem: (Crime) -> Unit,
 ) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
 
     private lateinit var binding: RecyclerCrimesItemBinding
 
-    var crimeList: List<Crime> = emptyList()
-        set(newValue) {
-            field = newValue
-            notifyDataSetChanged()
-        }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeViewHolder {
         binding = RecyclerCrimesItemBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false)
+            .inflate(LayoutInflater.from(parent.context), parent, false)
 
         return CrimeViewHolder(binding, selectedItem)
     }
@@ -87,12 +79,13 @@ class CrimesRecyclerAdapter(
             }
 
             binding.popUpMenu.setOnClickListener {
-                showPopUpMenu(it, crime.id ?: 0)
+                showPopUpMenu(it)
             }
 
         }
 
-        private fun showPopUpMenu(view: View, id: Long) {
+        @SuppressLint("NotifyDataSetChanged")
+        private fun showPopUpMenu(view: View) {
             val popupMenu = PopupMenu(view.context, view)
             val context = view.context
 
@@ -107,7 +100,9 @@ class CrimesRecyclerAdapter(
                 when (it.itemId) {
                     ID_REMOVE -> {
                         removeItem(crime?.id ?: 0)
-
+                        crimes?.remove(crime)
+                        //crimes?.let { it1 -> notifyItemRemoved(it1.indexOf(crime)) }
+                        notifyDataSetChanged()
                     }
                 }
                 return@setOnMenuItemClickListener true

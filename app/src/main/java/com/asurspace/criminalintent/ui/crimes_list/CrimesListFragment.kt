@@ -75,7 +75,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private fun subscribeOnLiveData() {
         viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
-            crimesAdapter = CrimesRecyclerAdapter(crimes) { crime ->
+            crimesAdapter = CrimesRecyclerAdapter(crimes?.toMutableList()) { crime ->
                 setCrimeToResult(crime)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
