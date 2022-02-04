@@ -38,15 +38,12 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
-
     private val pickImageLauncher = registerForActivityResult(OpenDocument(), ::onGotImageResult)
-
-    private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
-
-    private var photoPaths = ArrayList<Any>()
 
     private var _binding: CrimeFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -161,6 +158,13 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     }
 
+    private fun setImageResult(uri: String) {
+        setFragmentResult(
+            PREVIEW,
+            bundleOf(IMAGE to (uri))
+        )
+    }
+
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
             MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
@@ -207,13 +211,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             )
             viewModel.setUpdatedImage(uri)
         }
-    }
-
-    private fun setImageResult(uri: String) {
-        setFragmentResult(
-            PREVIEW,
-            bundleOf(IMAGE to (uri))
-        )
     }
 
     override fun onStart() {

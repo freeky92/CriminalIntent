@@ -1,6 +1,5 @@
 package com.asurspace.criminalintent.ui.create_crime
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,6 +8,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
@@ -21,9 +21,6 @@ import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.ui.PreviewFragment
-import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst
-import droidninja.filepicker.FilePickerConst.REQUEST_CODE_PHOTO
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
@@ -34,13 +31,13 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
-
-    private val viewModel by viewModels<CreateCrimeVM>()
-
-    private var photoPaths = ArrayList<Any>()
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument(), ::onGotImageResult)
 
     private var _binding: CreateCrimeFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel by viewModels<CreateCrimeVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,8 +70,8 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         if (!viewModel.descriptionLD.value.isNullOrEmpty()) {
             binding.crimeDescriptionInput.editText?.setText(viewModel.descriptionLD.value ?: "")
         }
-        if (!viewModel.imageUriLD.value.isNullOrEmpty()) {
-            binding.crimeIv.setImageURI(Uri.parse(viewModel.imageUriLD.value))
+        if (viewModel.imageUriLD.value != null) {
+            binding.crimeIv.setImageURI(viewModel.imageUriLD.value)
         }
 
     }
@@ -104,9 +101,9 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
 
         binding.crimeIv.setOnClickListener {
-            if ((viewModel.imageUriLD.value ?: "").isNotEmpty()) {
+            if (viewModel.imageUriLD.value != null) {
                 (activity as MainActivity).openFragment(PreviewFragment())
-                setImageResult(viewModel.imageUriLD.value ?: "")
+                setImageResult(viewModel.imageUriLD.value.toString())
             }
         }
 
@@ -114,29 +111,9 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private fun subscribeOnLD() {
         viewModel.imageUriLD.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                binding.crimeIv.setImageURI(Uri.parse(it))
+            if (it != null) {
+                binding.crimeIv.setImageURI(it)
             }
-        }
-    }
-
-    private fun openFilePicker() {
-        FilePickerBuilder.instance
-            .setMaxCount(1)
-            .setActivityTheme(R.style.Theme_CriminalIntent)
-            .pickPhoto(this)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)
-                    ?.let { photoPaths.addAll(it) }
-            }
-        }
-        if (photoPaths.isNotEmpty()) {
-            viewModel.setUpdatedImage((photoPaths.first() as Uri).toString())
-            photoPaths.clear()
         }
     }
 
@@ -147,16 +124,11 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         )
     }
 
-    private fun onGotPermissionResult(results: Map<String, Boolean>) {
-        if (UtilPermissions.hasPermissions(requireContext(), *results.keys.toTypedArray())) {
-            openFilePicker()
-        } else { //false
-            if (!shouldShowRequestPermissionRationale(results.keys.last())) {
-                askForOpeningSettings()
-            } else {
-                (activity as MainActivity).showSnackBar("Permission needed!")
-            }
-        }
+    private fun fragmentResumeResult() {
+        requireActivity().supportFragmentManager.setFragmentResult(
+            MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
+            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CREATE_CRIME_FRAGMENT)
+        )
     }
 
     private fun askForOpeningSettings() {
@@ -178,12 +150,26 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         }
     }
 
+    private fun onGotPermissionResult(results: Map<String, Boolean>) {
+        if (UtilPermissions.hasPermissions(requireContext(), *results.keys.toTypedArray())) {
+            pickImageLauncher.launch(arrayOf("image/*"))
+        } else { //false
+            if (!shouldShowRequestPermissionRationale(results.keys.last())) {
+                askForOpeningSettings()
+            } else {
+                (activity as MainActivity).showSnackBar("Permission needed!")
+            }
+        }
+    }
 
-    private fun fragmentResumeResult() {
-        requireActivity().supportFragmentManager.setFragmentResult(
-            MainActivity.NAVIGATION_EVENT,                              // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CREATE_CRIME_FRAGMENT)
-        )
+    private fun onGotImageResult(uri: Uri?) {
+        uri?.let {
+            context?.contentResolver?.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.setUpdatedImage(uri)
+        }
     }
 
     override fun onResume() {
