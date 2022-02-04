@@ -12,11 +12,23 @@ import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
+
+interface CrimesListener{
+
+    fun onSelectCrime(crime: Crime)
+
+    fun onCrimeDelete(id: Long)
+
+    fun onStateChanged(id: Long, solved: Boolean)
+
+}
 
 @DelicateCoroutinesApi
 class CrimesRecyclerAdapter(
@@ -24,23 +36,23 @@ class CrimesRecyclerAdapter(
     private val selectedItem: (Crime) -> Unit,
 ) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
 
+    private lateinit var binding: RecyclerCrimesItemBinding
+
     var crimeList: List<Crime> = emptyList()
         set(newValue) {
             field = newValue
             notifyDataSetChanged()
         }
 
-    private lateinit var binding: RecyclerCrimesItemBinding
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeViewHolder {
-        binding =
-            RecyclerCrimesItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        binding = RecyclerCrimesItemBinding
+                .inflate(LayoutInflater.from(parent.context), parent, false)
 
         return CrimeViewHolder(binding, selectedItem)
     }
 
     override fun onBindViewHolder(holder: CrimeViewHolder, position: Int) {
-        holder.setCrime(crimes?.get(position) ?: Crime(null, null, null, null, null, null, null))
+        holder.setCrime(crimes?.get(position) ?: emptyCrime())
     }
 
     override fun getItemCount(): Int = crimes?.size ?: 0
