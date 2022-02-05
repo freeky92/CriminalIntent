@@ -9,123 +9,110 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
-import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
-import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
-import kotlinx.coroutines.*
 
 
-interface CrimesListener {
-
-    fun onSelectCrime(crime: Crime)
+interface CrimesActionListener {
 
     fun onCrimeDelete(id: Long)
 
     fun onStateChanged(id: Long, solved: Boolean)
 
+    fun updateList(crimesList: MutableList<Crime>?)
+
 }
 
-@DelicateCoroutinesApi
 class CrimesRecyclerAdapter(
-    private var crimes: MutableList<Crime>?,
+    private val actionActionListener: CrimesActionListener,
+    crimesList: MutableList<Crime>?,
     private val selectedItem: (Crime) -> Unit,
 ) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
 
-    private lateinit var binding: RecyclerCrimesItemBinding
+    var crimes: MutableList<Crime> = crimesList ?: mutableListOf()
+        @SuppressLint("NotifyDataSetChanged")
+        set(newValue) {
+            field = newValue
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeViewHolder {
-        binding = RecyclerCrimesItemBinding
+        val binding: RecyclerCrimesItemBinding = RecyclerCrimesItemBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return CrimeViewHolder(binding, selectedItem)
+        return CrimeViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CrimeViewHolder, position: Int) {
-        holder.setCrime(crimes?.get(position) ?: emptyCrime())
-    }
+        val crime = crimes[position]
 
-    override fun getItemCount(): Int = crimes?.size ?: 0
+        with(holder.binding) {
+            holder.itemView.tag = crime
+            popUpMenu.tag = crime
 
-    @DelicateCoroutinesApi
-    inner class CrimeViewHolder(
-        private val binding: RecyclerCrimesItemBinding,
-        val selectedItem: (Crime) -> Unit,
-    ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val crimeDB: CrimesRepository = Repository.crimesRepo
-
-        private var crime: Crime? = null
-
-        fun setCrime(crime: Crime) {
-            this.crime = crime
-            binding.rvSolvedCb.isChecked = crime.solved ?: false
-            binding.crimeTitle.text = crime.title
-            binding.suspect.text = crime.suspect
+            rvSolvedCb.isChecked = crime.solved ?: false
+            crimeTitle.text = crime.title
+            suspect.text = crime.suspect
             if (crime.imageURI != null) {
-                binding.rvCrimeImage.setImageURI(Uri.parse(crime.imageURI))
+                rvCrimeImage.setImageURI(Uri.parse(crime.imageURI))
             } else {
-                binding.rvCrimeImage.setImageResource(R.drawable.ic_baseline_insert_photo_24)
+                rvCrimeImage.setImageResource(R.drawable.ic_baseline_insert_photo_24)
             }
 
-            binding.rvSolvedCb.setOnCheckedChangeListener { _, b ->
-                crime.id?.let { changeState(it, b) }
+            rvSolvedCb.setOnCheckedChangeListener { _, b ->
+                val index = crimes.indexOfFirst { it.id == crime.id }
+                crime.id?.let {
+                    actionActionListener.onStateChanged(it, b)
+                    val newCrime = crime.toMutableCrime()
+                    newCrime.solved = b
+                    crimes[index] = newCrime.toCrime()
+                    actionActionListener.updateList(crimes)
+                }
             }
 
-            binding.root.setOnClickListener {
+            root.setOnClickListener {
                 selectedItem(crime)
             }
 
-            binding.popUpMenu.setOnClickListener {
+            popUpMenu.setOnClickListener {
                 showPopUpMenu(it)
             }
-
         }
-
-        @SuppressLint("NotifyDataSetChanged")
-        private fun showPopUpMenu(view: View) {
-            val popupMenu = PopupMenu(view.context, view)
-            val context = view.context
-
-            popupMenu.menu.add(
-                0,
-                ID_REMOVE,
-                Menu.NONE,
-                context.getString(R.string.remove_menu_item)
-            )
-
-            popupMenu.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    ID_REMOVE -> {
-                        removeItem(crime?.id ?: 0)
-                        crimes?.remove(crime)
-                        //crimes?.let { it1 -> notifyItemRemoved(it1.indexOf(crime)) }
-                        notifyDataSetChanged()
-                    }
-                }
-                return@setOnMenuItemClickListener true
-            }
-
-            popupMenu.show()
-        }
-
-        @DelicateCoroutinesApi
-        private fun changeState(crimeId: Long, solved: Boolean) {
-            GlobalScope.launch(Dispatchers.IO) {
-                crimeDB.setSolved(SetSolvedTuples(crimeId, solved))
-            }
-        }
-
-        private fun removeItem(crimeId: Long) {
-            GlobalScope.launch(Dispatchers.IO) {
-                crimeDB.deleteCrime(crimeId)
-            }
-        }
-
-
     }
+
+    override fun getItemCount(): Int = crimes.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun showPopUpMenu(view: View) {
+        val popupMenu = PopupMenu(view.context, view)
+        val context = view.context
+        val crime = view.tag as Crime
+
+        popupMenu.menu.add(
+            0,
+            ID_REMOVE,
+            Menu.NONE,
+            context.getString(R.string.remove_menu_item)
+        )
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                ID_REMOVE -> {
+                    actionActionListener.onCrimeDelete(crime.id ?: 0)
+                    crimes.remove(crime)
+                    notifyDataSetChanged()
+                }
+            }
+            return@setOnMenuItemClickListener true
+        }
+
+        popupMenu.show()
+    }
+
+    inner class CrimeViewHolder(
+        val binding: RecyclerCrimesItemBinding,
+    ) : RecyclerView.ViewHolder(binding.root)
 
     companion object {
         const val ID_REMOVE = 1

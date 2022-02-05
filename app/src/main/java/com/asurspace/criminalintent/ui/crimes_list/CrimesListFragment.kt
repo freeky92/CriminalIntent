@@ -75,7 +75,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private fun subscribeOnLiveData() {
         viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
-            crimesAdapter = CrimesRecyclerAdapter(crimes?.toMutableList()) { crime ->
+            crimesAdapter = CrimesRecyclerAdapter(viewModel, crimes?.toMutableList()) { crime ->
                 setCrimeToResult(crime)
                 (activity as MainActivity).openFragment(CrimeFragment())
             }
@@ -130,7 +130,6 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         fragmentResumeResult()
@@ -140,6 +139,5 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         super.onDestroyView()
         _binding = null
     }
-
 
 }

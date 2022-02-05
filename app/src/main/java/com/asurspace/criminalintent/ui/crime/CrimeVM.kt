@@ -132,28 +132,18 @@ class CrimeVM(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
-                Log.i("vmOnCreate", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {
-                Log.i("vmOnStart", crimeLD.value.toString())
-                Log.i("vmOnStart", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_RESUME -> {
-                Log.i("vmOnResume", crimeLD.value.toString())
-                Log.i("vmOnResume", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_PAUSE -> {
                 update()
-                Log.i("vmOnCreate", crimeLD.value.toString())
-                Log.i("vmOnCreate", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_STOP -> {
-                Log.i("vmOnStop", crimeLD.value.toString())
-
             }
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
-                Log.i("vmOnDestroy", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_ANY -> {
             }
