@@ -1,5 +1,6 @@
 package com.asurspace.criminalintent.ui.create_crime
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import com.asurspace.criminalintent.Repository
@@ -24,28 +25,28 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
     private val _description = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_DESCRIPTION)
     val descriptionLD = _description.share()
 
-    private val _imageUriLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_IMAGE_URI)
+    private val _imageUriLD = savedStateHandle.getLiveData<Uri>(CrimesTable.COLUMN_IMAGE_URI)
     val imageUriLD = _imageUriLD.share()
 
     fun setUpdatedTitle(title: String?) {
-        if (imageUriLD.value != title) {
+        if (titleLD.value != title) {
             _titleLD.value = title
         }
     }
 
     fun setUpdatedSuspect(suspect: String?) {
-        if (imageUriLD.value != suspect) {
+        if (suspectLD.value != suspect) {
             _suspectLD.value = suspect
         }
     }
 
     fun setUpdatedDescription(description: String?) {
-        if (imageUriLD.value != description) {
+        if (descriptionLD.value != description) {
             _description.value = description
         }
     }
 
-    fun setUpdatedImage(uri: String?) {
+    fun setUpdatedImage(uri: Uri?) {
         if (imageUriLD.value != uri) {
             _imageUriLD.value = uri
         }
@@ -61,7 +62,7 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
                     suspect = suspectLD.value,
                     description = descriptionLD.value,
                     creationDate = System.currentTimeMillis(),
-                    imageURI = imageUriLD.value
+                    imageURI = imageUriLD.value.toString()
                 )
             )
         }
@@ -87,7 +88,7 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
         }
 
         if (!savedStateHandle.contains(CrimesTable.COLUMN_IMAGE_URI)
-            || savedStateHandle.get<String>(CrimesTable.COLUMN_IMAGE_URI) != imageUriLD.value
+            || savedStateHandle.get<Uri>(CrimesTable.COLUMN_IMAGE_URI) != imageUriLD.value
         ) {
             savedStateHandle.set(CrimesTable.COLUMN_IMAGE_URI, imageUriLD.value)
         }

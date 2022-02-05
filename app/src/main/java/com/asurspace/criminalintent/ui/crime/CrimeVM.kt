@@ -1,5 +1,6 @@
 package com.asurspace.criminalintent.ui.crime
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
@@ -34,7 +35,7 @@ class CrimeVM(
     private val _cDateLD = MutableLiveData<Long?>()
     val cDateLD = _cDateLD.share()
 
-    private val _imageUriLD = MutableLiveData<String?>()
+    private val _imageUriLD = MutableLiveData<Uri>()
     val imageUriLD = _imageUriLD.share()
 
     private val _isRemoved = MutableLiveData<Int>()
@@ -71,7 +72,7 @@ class CrimeVM(
             _suspectLD.value = this?.suspect
             _descriptionLD.value = this?.description
             _cDateLD.value = this?.creationDate
-            _imageUriLD.value = this?.imageURI
+            _imageUriLD.value = Uri.parse(this?.imageURI)
         }
     }
 
@@ -99,7 +100,7 @@ class CrimeVM(
         }
     }
 
-    fun setUpdatedImage(uri: String?) {
+    fun setUpdatedImage(uri: Uri) {
         if (imageUriLD.value != uri) {
             _imageUriLD.value = uri
         }
@@ -113,7 +114,7 @@ class CrimeVM(
             this?.suspect = suspectLD.value
             this?.desciption = descriptionLD.value
             this?.creationDate = cDateLD.value
-            this?.imageURI = imageUriLD.value
+            this?.imageURI = imageUriLD.value.toString()
         }
         if (crimeLD.value != updatedCrime?.toCrime()) {
             _crimeLD.value = updatedCrime?.toCrime()
@@ -128,37 +129,25 @@ class CrimeVM(
         }
     }
 
-
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
-                Log.i("vmOnCreate", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_START -> {
-                Log.i("vmOnStart", crimeLD.value.toString())
-                Log.i("vmOnStart", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_RESUME -> {
-                Log.i("vmOnResume", crimeLD.value.toString())
-                Log.i("vmOnResume", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_PAUSE -> {
                 update()
-                Log.i("vmOnCreate", crimeLD.value.toString())
-                Log.i("vmOnCreate", _crimeId.value.toString())
             }
             Lifecycle.Event.ON_STOP -> {
-                Log.i("vmOnStop", crimeLD.value.toString())
-
             }
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
-                Log.i("vmOnDestroy", crimeLD.value.toString())
             }
             Lifecycle.Event.ON_ANY -> {
             }
         }
     }
-
 
 }

@@ -72,10 +72,12 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
         useIR = true
     }
+
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -170,5 +172,7 @@ dependencies {
     // hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
+
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
 
 }
