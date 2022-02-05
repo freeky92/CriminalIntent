@@ -27,9 +27,7 @@ import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
 import com.asurspace.criminalintent.util.TO_CRIME_FRAGMENT
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.viewModelCreator
-import kotlinx.coroutines.DelicateCoroutinesApi
 
-@DelicateCoroutinesApi
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val permissionLauncher = registerForActivityResult(

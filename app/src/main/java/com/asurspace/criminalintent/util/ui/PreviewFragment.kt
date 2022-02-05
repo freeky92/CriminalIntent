@@ -13,9 +13,7 @@ import com.asurspace.criminalintent.databinding.FragmentPreviewBinding
 import com.asurspace.criminalintent.util.IMAGE
 import com.asurspace.criminalintent.util.PREVIEW
 import com.asurspace.criminalintent.util.PREVIEW_FRAGMENT
-import kotlinx.coroutines.DelicateCoroutinesApi
 
-@DelicateCoroutinesApi
 class PreviewFragment : Fragment() {
 
     private var _binding: FragmentPreviewBinding? = null

@@ -1,11 +1,16 @@
 package com.asurspace.criminalintent
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
@@ -18,11 +23,18 @@ import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
 import com.asurspace.criminalintent.util.CRIME_FRAGMENT
 import com.asurspace.criminalintent.util.PREVIEW_FRAGMENT
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.DelicateCoroutinesApi
 
-@DelicateCoroutinesApi
 class MainActivity : AppCompatActivity() {
 
+    private val permissionLauncherAdd = registerForActivityResult(
+        RequestPermission(),
+        ::onGetPermissionResultAdd
+    )
+
+    private val permissionLauncherShowSub = registerForActivityResult(
+        RequestPermission(),
+        ::onGetPermissionResultShowSub
+    )
 
     companion object {
         const val NAVIGATION_EVENT: String = "navigation_event"
@@ -60,12 +72,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_add -> {
-            openFragment(CreateCrimeFragment())
+            permissionLauncherAdd.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             true
         }
 
         R.id.action_show_subtitle -> {
-
+            permissionLauncherShowSub.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             true
         }
 
@@ -149,6 +161,42 @@ class MainActivity : AppCompatActivity() {
             }
             show()
         }
+    }
+
+    private fun askForOpeningSettings() {
+        val startSettingActivityIntent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", packageName, null)
+        )
+        if (packageManager?.resolveActivity(
+                startSettingActivityIntent, PackageManager.MATCH_DEFAULT_ONLY
+            ) == null
+        ) {
+            showSnackBar("Permission denied forever!")
+        } else {
+            showDialog(
+                "Our app will not works without this permission, you can add it in settings.",
+                "Settings",
+                startSettingActivityIntent
+            )
+        }
+    }
+
+    private fun onGetPermissionResultAdd(state: Boolean) {
+        if (state) {
+            openFragment(CreateCrimeFragment())
+        } else {
+            askForOpeningSettings()
+        }
+    }
+
+    private fun onGetPermissionResultShowSub(state: Boolean) {
+        if (state) {
+            //openFragment()
+        } else {
+            askForOpeningSettings()
+        }
+
     }
 
     private fun listenNavigationEvents() {

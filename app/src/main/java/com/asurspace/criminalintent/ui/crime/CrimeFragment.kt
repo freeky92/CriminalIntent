@@ -27,11 +27,9 @@ import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
 
-@DelicateCoroutinesApi
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private val permissionLauncher = registerForActivityResult(

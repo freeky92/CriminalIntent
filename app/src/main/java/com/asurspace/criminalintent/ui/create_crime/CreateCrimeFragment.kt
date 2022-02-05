@@ -21,10 +21,8 @@ import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.ui.PreviewFragment
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
-@DelicateCoroutinesApi
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private val permissionLauncher = registerForActivityResult(
@@ -153,7 +151,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
     private fun onGotPermissionResult(results: Map<String, Boolean>) {
         if (UtilPermissions.hasPermissions(requireContext(), *results.keys.toTypedArray())) {
             pickImageLauncher.launch(arrayOf("image/*"))
-        } else { //false
+        } else {
             if (!shouldShowRequestPermissionRationale(results.keys.last())) {
                 askForOpeningSettings()
             } else {
