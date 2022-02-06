@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onGetPermissionResultShowSub(state: Boolean) {
         if (state) {
-            //openFragment()
+            //ShowSub
         } else {
             askForOpeningSettings()
         }
@@ -257,6 +257,5 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
 }

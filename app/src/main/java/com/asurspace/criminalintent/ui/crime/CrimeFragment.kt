@@ -102,7 +102,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         }
 
         binding.removeTb.setOnClickListener {
-            //(activity as MainActivity)
             val snackBar = Snackbar.make(
                 binding.root,
                 "Are you sure?",
@@ -116,9 +115,9 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
                 it.textSize = 16f
                 it.textAlignment = View.TEXT_ALIGNMENT_CENTER
             }
-            snackBar.view.setOnClickListener {
-                snackBar.dismiss()
-            }
+
+            binding.root.setOnClickListener { snackBar.dismiss() }
+
             snackBar.setAction("Delete") {
                 viewModel.remove()
             }.show()
