@@ -1,6 +1,7 @@
 package com.asurspace.criminalintent.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.bumptech.glide.Glide
 
 
 interface CrimesActionListener {
@@ -19,12 +21,12 @@ interface CrimesActionListener {
 
     fun onStateChanged(id: Long, solved: Boolean)
 
-    fun updateList(crimesList: MutableList<Crime>?)
+    fun replaceChangedCrime(index: Int, crime: Crime)
 
 }
 
 class CrimesRecyclerAdapter(
-    private val actionActionListener: CrimesActionListener,
+    private val actionListener: CrimesActionListener,
     crimesList: MutableList<Crime>?,
     private val selectedItem: (Crime) -> Unit,
 ) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
@@ -55,7 +57,7 @@ class CrimesRecyclerAdapter(
             crimeTitle.text = crime.title
             suspect.text = crime.suspect
             if (crime.imageURI != null) {
-                rvCrimeImage.setImageURI(Uri.parse(crime.imageURI))
+                Glide.with(root.context).load(Uri.parse(crime.imageURI)).into(rvCrimeImage)
             } else {
                 rvCrimeImage.setImageResource(R.drawable.ic_baseline_insert_photo_24)
             }
@@ -63,11 +65,11 @@ class CrimesRecyclerAdapter(
             rvSolvedCb.setOnCheckedChangeListener { _, b ->
                 val index = crimes.indexOfFirst { it.id == crime.id }
                 crime.id?.let {
-                    actionActionListener.onStateChanged(it, b)
+                    actionListener.onStateChanged(it, b)
                     val newCrime = crime.toMutableCrime()
                     newCrime.solved = b
                     crimes[index] = newCrime.toCrime()
-                    actionActionListener.updateList(crimes)
+                    actionListener.replaceChangedCrime(index, newCrime.toCrime())
                 }
             }
 
@@ -99,7 +101,7 @@ class CrimesRecyclerAdapter(
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 ID_REMOVE -> {
-                    actionActionListener.onCrimeDelete(crime.id ?: 0)
+                    actionListener.onCrimeDelete(crime.id ?: 0)
                     crimes.remove(crime)
                     notifyDataSetChanged()
                 }

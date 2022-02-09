@@ -40,8 +40,10 @@ class CrimesListVM(private val crimeDB: CrimesRepository) : ViewModel(),
         }
     }
 
-    override fun updateList(crimesList: MutableList<Crime>?) {
-        _crimeListLD.value = crimesList
+    override fun replaceChangedCrime(index: Int, crime: Crime) {
+        val list = crimeListLD.value?.toMutableList()
+        list?.set(index, crime)
+        _crimeListLD.value = list
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

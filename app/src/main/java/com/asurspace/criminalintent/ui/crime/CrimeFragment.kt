@@ -32,6 +32,8 @@ import java.util.*
 
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
+    private lateinit var snackBar: Snackbar
+
     private val permissionLauncher = registerForActivityResult(
         RequestMultiplePermissions(),
         ::onGotPermissionResult
@@ -101,8 +103,9 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             permissionLauncher.launch(PERMISSIONS)
         }
 
+        snackBar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
         binding.removeTb.setOnClickListener {
-            val snackBar = Snackbar.make(
+            snackBar = Snackbar.make(
                 binding.root,
                 "Are you sure?",
                 Snackbar.LENGTH_INDEFINITE
@@ -117,6 +120,10 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
             }
 
             binding.root.setOnClickListener { snackBar.dismiss() }
+
+            snackBar.view.setOnClickListener {
+                snackBar.dismiss()
+            }
 
             snackBar.setAction("Delete") {
                 viewModel.remove()
@@ -221,6 +228,13 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     override fun onResume() {
         super.onResume()
         fragmentResumeResult()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (snackBar.isShown) {
+            snackBar.dismiss()
+        }
     }
 
     override fun onDestroyView() {
