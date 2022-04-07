@@ -10,7 +10,7 @@
     <string name="crime_title">Crime Title</string>
     <string name="solved">Solved</string>
     <string name="crimes_list">Crimes List</string>
-    <string name="create_crime">Create crime</string>
+    <string name="create_crime">Create Crime</string>
     <string name="crime_description">Crime Description</string>
     <string name="enter_crime_description">Enter crime description</string>
     <string name="image_settb">image settb</string>
@@ -26,5 +26,6 @@
     <string name="storage_permission_needed">Storage permission needed</string>
     <string name="request_permission">Request permission</string>
     <string name="err">Error</string>
-    <string name="io_err">Databe error</string>
+    <string name="io_err">Database error</string>
+    <string name="crime_details">Crime Detail</string>
 </resources>

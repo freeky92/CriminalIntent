@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
+import com.asurspace.criminalintent.foundation.ProviderCustomTitle
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.ui.PreviewFragment
@@ -25,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
+class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment), ProviderCustomTitle {
 
     private val permissionLauncher = registerForActivityResult(
         RequestMultiplePermissions(),
@@ -180,5 +181,7 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun getTitle() = R.string.create_crime
 
 }

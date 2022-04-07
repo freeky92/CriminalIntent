@@ -18,12 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
 import com.asurspace.criminalintent.foundation.Navigator
+import com.asurspace.criminalintent.foundation.ProviderCustomTitle
 import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
-import com.asurspace.criminalintent.util.CREATE_CRIME_FRAGMENT
-import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
-import com.asurspace.criminalintent.util.CRIME_FRAGMENT
-import com.asurspace.criminalintent.util.PREVIEW_FRAGMENT
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,13 +37,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         ::onGetPermissionResultShowSub
     )
 
-    companion object {
-        const val NAVIGATION_EVENT: String = "navigation_event"
-        const val NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY: String = "fragment_name"
-
-        @JvmStatic
-        private val TAG = "MainActivity"
-    }
+    private val currentFragment get() = supportFragmentManager.findFragmentById(R.id.main_container)
 
     private lateinit var binding: MainActivityBinding
 
@@ -59,18 +50,31 @@ class MainActivity : AppCompatActivity(), Navigator {
         binding = MainActivityBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         setSupportActionBar(binding.actionBar)
+        addItem = binding.actionBar.menu.findItem(R.id.action_add)
+        showSubtitle = binding.actionBar.menu.findItem(R.id.action_show_subtitle)
+
 
         if (savedInstanceState == null) {
             openFragment(CrimesListFragment(), true, "CrimesListFragment")
+        }
+        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentListener, false)
+    }
+
+    private val fragmentListener = object : FragmentManager.FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(
+            fm: FragmentManager,
+            f: Fragment,
+            v: View,
+            savedInstanceState: Bundle?
+        ) {
+            super.onFragmentViewCreated(fm, f, v, savedInstanceState)
+            updateUI()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        addItem = menu.findItem(R.id.action_add)
-        showSubtitle = menu.findItem(R.id.action_show_subtitle)
-
-        listenNavigationEvents()
+        customTitleCheck(currentFragment)
         return true
     }
 
@@ -118,11 +122,6 @@ class MainActivity : AppCompatActivity(), Navigator {
         } else {
             finish()
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 
     // todo PB
@@ -209,62 +208,43 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     }
 
-    private fun listenNavigationEvents() {
-        supportFragmentManager.setFragmentResultListener(NAVIGATION_EVENT, this) { _, bundle ->
+    private fun updateUI() {
+        val fragment = currentFragment
+        customTitleCheck(fragment)
+        actionCheck(fragment)
 
-            when (bundle.get(NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY) as String) {
+    }
 
-                // on crimes list fragment
-                CRIMES_LIST_FRAGMENT -> {
-                    supportActionBar?.let {
-                        it.setDisplayHomeAsUpEnabled(false)
-                        it.title = resources.getString(R.string.crimes_list)
-                        if (!it.isShowing) {
-                            it.show()
-                        }
-                    }
-                    addItem.isVisible = true
-                    showSubtitle.isVisible = true
-                }
-
-                // on crime fragment
-                CRIME_FRAGMENT -> {
-                    supportActionBar?.let {
-                        it.setDisplayHomeAsUpEnabled(true)
-                        it.title = resources.getString(R.string.crime_text)
-                        if (!it.isShowing) {
-                            it.show()
-                        }
-                    }
-                    addItem.isVisible = true
-                    showSubtitle.isVisible = false
-                }
-
-                // on crimes list fragment
-                CREATE_CRIME_FRAGMENT -> {
-                    supportActionBar?.let {
-                        it.setDisplayHomeAsUpEnabled(true)
-                        it.title = resources.getString(R.string.create_crime)
-                        if (!it.isShowing) {
-                            it.show()
-                        }
-                    }
-                    addItem.isVisible = false
-                    showSubtitle.isVisible = false
-                }
-
-                // on PREVIEW
-                PREVIEW_FRAGMENT -> {
-                    supportActionBar?.hide()
-                }
-
-                else -> {
-                    addItem.isVisible = true
-                    showSubtitle.isVisible = true
-                }
-            }
-
+    private fun customTitleCheck(fragment: Fragment?) {
+        if (fragment is ProviderCustomTitle) {
+            binding.actionBar.title = getString(fragment.getTitle())
+            binding.actionBar.isTitleCentered = true
+        } else {
+            binding.actionBar.title = ""
         }
     }
 
+    private fun actionCheck(fragment: Fragment?) {
+        if (fragment !is CrimesListFragment) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            addItem.isVisible = true
+        } else {
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            addItem.isVisible = false
+        }
+    }
+
+    override fun onDestroy() {
+        supportFragmentManager.unregisterFragmentLifecycleCallbacks(fragmentListener)
+        super.onDestroy()
+    }
+
+
+    companion object {
+        const val NAVIGATION_EVENT: String = "navigation_event"
+        const val NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY: String = "fragment_name"
+
+        @JvmStatic
+        private val TAG = "MainActivity"
+    }
 }

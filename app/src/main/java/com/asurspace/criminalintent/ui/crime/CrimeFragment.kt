@@ -21,6 +21,7 @@ import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
+import com.asurspace.criminalintent.foundation.ProviderCustomTitle
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
@@ -31,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class CrimeFragment : Fragment(R.layout.crime_fragment) {
+class CrimeFragment : Fragment(R.layout.crime_fragment), ProviderCustomTitle {
 
     private lateinit var snackBar: Snackbar
 
@@ -243,4 +244,5 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
         _binding = null
     }
 
+    override fun getTitle() = R.string.crime_details
 }

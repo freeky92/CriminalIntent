@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
+import com.asurspace.criminalintent.foundation.ProviderCustomTitle
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.ui.crime.CrimeFragment
@@ -31,7 +32,7 @@ import com.asurspace.criminalintent.ui.state.UIState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
+class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCustomTitle {
 
     private val permissionLauncher = registerForActivityResult(
         RequestMultiplePermissions(),
@@ -110,7 +111,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private fun fragmentResumeResult() {
         requireActivity().supportFragmentManager.setFragmentResult(
-            MainActivity.NAVIGATION_EVENT,                                   // !!CHANGE FragmentNameList.CRIME_FRAGMENT VALUE ON COPY!!
+            MainActivity.NAVIGATION_EVENT,
             bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CRIMES_LIST_FRAGMENT)
         )
     }
@@ -157,5 +158,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun getTitle() = R.string.crimes_list
 
 }
