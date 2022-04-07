@@ -2,12 +2,12 @@ package com.asurspace.criminalintent.model.crimes
 
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 
 
 interface CrimesRepository {
 
-    suspend fun getAllCrimes(onlyActive: Boolean?): List<Crime>?
+    fun getAllCrimes(onlyActive: Boolean?): Flow<MutableList<Crime>>
 
     suspend fun findCrimeById(crimeId: Long): Crime?
 

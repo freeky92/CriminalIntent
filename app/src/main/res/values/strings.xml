@@ -25,4 +25,6 @@
     <string name="remove_menu_item">Remove</string>
     <string name="storage_permission_needed">Storage permission needed</string>
     <string name="request_permission">Request permission</string>
+    <string name="err">Error</string>
+    <string name="io_err">Databe error</string>
 </resources>

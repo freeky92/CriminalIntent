@@ -17,9 +17,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.*
@@ -27,9 +27,10 @@ import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.util.ui.PreviewFragment
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
-
+@AndroidEntryPoint
 class CrimeFragment : Fragment(R.layout.crime_fragment) {
 
     private lateinit var snackBar: Snackbar
@@ -43,7 +44,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment) {
     private var _binding: CrimeFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModels<CrimeVM> { VMFactory(this, Repository.crimesRepo) }
+    private val viewModel by viewModels<CrimeVM> ()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

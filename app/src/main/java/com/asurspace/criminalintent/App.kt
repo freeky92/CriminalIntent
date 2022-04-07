@@ -1,8 +1,7 @@
 package com.asurspace.criminalintent
 
 import android.app.Application
-import com.asurspace.criminalintent.model.crimes.CrimesService
+import dagger.hilt.android.HiltAndroidApp
 
-class App: Application() {
-    val crimesService = CrimesService(Repository.crimesRepo)
-}
+@HiltAndroidApp
+class App: Application()

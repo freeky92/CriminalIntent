@@ -1,7 +1,5 @@
 package com.asurspace.criminalintent.ui
 
-import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.Menu
@@ -19,20 +17,17 @@ interface CrimesActionListener {
 
     fun onCrimeDelete(id: Long)
 
-    fun onStateChanged(id: Long, solved: Boolean)
+    fun onStateChanged(id: Long, solved: Boolean, index: Int)
 
-    fun replaceChangedCrime(index: Int, crime: Crime)
+    fun onItemSelect(crime: Crime)
 
 }
 
 class CrimesRecyclerAdapter(
     private val actionListener: CrimesActionListener,
-    crimesList: MutableList<Crime>?,
-    private val selectedItem: (Crime) -> Unit,
 ) : RecyclerView.Adapter<CrimesRecyclerAdapter.CrimeViewHolder>() {
 
-    var crimes: MutableList<Crime> = crimesList ?: mutableListOf()
-        @SuppressLint("NotifyDataSetChanged")
+    var crimes: List<Crime> = emptyList()
         set(newValue) {
             field = newValue
             notifyDataSetChanged()
@@ -48,6 +43,8 @@ class CrimesRecyclerAdapter(
     override fun onBindViewHolder(holder: CrimeViewHolder, position: Int) {
         val crime = crimes[position]
 
+        holder.setIsRecyclable(false)
+
         with(holder.binding) {
             holder.itemView.tag = crime
             popUpMenu.tag = crime
@@ -56,25 +53,23 @@ class CrimesRecyclerAdapter(
             rvSolvedCb.isChecked = crime.solved ?: false
             crimeTitle.text = crime.title
             suspect.text = crime.suspect
-            if (crime.imageURI != null) {
-                Glide.with(root.context).load(Uri.parse(crime.imageURI)).into(rvCrimeImage)
-            } else {
-                rvCrimeImage.setImageResource(R.drawable.ic_baseline_insert_photo_24)
+            if (!crime.imageURI.isNullOrBlank()) {
+                Glide.with(root.context).load(Uri.parse(crime.imageURI))
+                    .placeholder(R.drawable.ic_baseline_insert_photo_24)
+                    .error(R.drawable.ic_baseline_insert_photo_24)
+                    .into(rvCrimeImage)
             }
 
             rvSolvedCb.setOnCheckedChangeListener { _, b ->
-                val index = crimes.indexOfFirst { it.id == crime.id }
+                val index = crimes.indexOf(crime)
                 crime.id?.let {
-                    actionListener.onStateChanged(it, b)
-                    val newCrime = crime.toMutableCrime()
-                    newCrime.solved = b
-                    crimes[index] = newCrime.toCrime()
-                    actionListener.replaceChangedCrime(index, newCrime.toCrime())
+                    actionListener.onStateChanged(it, b, index)
                 }
+                notifyItemChanged(index)
             }
 
             root.setOnClickListener {
-                selectedItem(crime)
+                actionListener.onItemSelect(crime)
             }
 
             popUpMenu.setOnClickListener {
@@ -85,7 +80,6 @@ class CrimesRecyclerAdapter(
 
     override fun getItemCount(): Int = crimes.size
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun showPopUpMenu(view: View) {
         val popupMenu = PopupMenu(view.context, view)
         val context = view.context
@@ -102,8 +96,7 @@ class CrimesRecyclerAdapter(
             when (it.itemId) {
                 ID_REMOVE -> {
                     actionListener.onCrimeDelete(crime.id ?: 0)
-                    crimes.remove(crime)
-                    notifyDataSetChanged()
+                    notifyItemRemoved(crimes.indexOf(crime))
                 }
             }
             return@setOnMenuItemClickListener true
@@ -114,7 +107,10 @@ class CrimesRecyclerAdapter(
 
     inner class CrimeViewHolder(
         val binding: RecyclerCrimesItemBinding,
-    ) : RecyclerView.ViewHolder(binding.root)
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+
+    }
 
     companion object {
         const val ID_REMOVE = 1

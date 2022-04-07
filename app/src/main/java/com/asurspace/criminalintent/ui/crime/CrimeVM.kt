@@ -7,10 +7,13 @@ import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.CRIME
 import com.asurspace.criminalintent.util.share
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CrimeVM(
+@HiltViewModel
+class CrimeVM @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val crimeDB: CrimesRepository
 ) : ViewModel(), LifecycleEventObserver {

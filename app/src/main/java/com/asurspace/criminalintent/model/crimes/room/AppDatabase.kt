@@ -1,8 +1,7 @@
-package com.asurspace.criminalintent.model.room
+package com.asurspace.criminalintent.model.crimes.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.asurspace.criminalintent.model.crimes.room.CrimesDao
 import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
 
 @Database(

@@ -21,16 +21,17 @@ import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.ui.PreviewFragment
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
+@AndroidEntryPoint
 class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment) {
 
     private val permissionLauncher = registerForActivityResult(
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
-    private val pickImageLauncher =
-        registerForActivityResult(ActivityResultContracts.OpenDocument(), ::onGotImageResult)
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument(), ::onGotImageResult)
 
     private var _binding: CreateCrimeFragmentBinding? = null
     private val binding get() = _binding!!

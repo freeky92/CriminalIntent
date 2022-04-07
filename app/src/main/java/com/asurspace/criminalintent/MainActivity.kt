@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
+import com.asurspace.criminalintent.foundation.Navigator
 import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
 import com.asurspace.criminalintent.util.CREATE_CRIME_FRAGMENT
@@ -23,8 +25,10 @@ import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
 import com.asurspace.criminalintent.util.CRIME_FRAGMENT
 import com.asurspace.criminalintent.util.PREVIEW_FRAGMENT
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(), Navigator {
 
     private val permissionLauncherAdd = registerForActivityResult(
         RequestPermission(),
@@ -39,17 +43,17 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val NAVIGATION_EVENT: String = "navigation_event"
         const val NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY: String = "fragment_name"
+
+        @JvmStatic
+        private val TAG = "MainActivity"
     }
 
     private lateinit var binding: MainActivityBinding
-
-    private val activityName: String = "MainActivity"
 
     private lateinit var addItem: MenuItem
     private lateinit var showSubtitle: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Repository.init(applicationContext)
         super.onCreate(savedInstanceState)
 
         binding = MainActivityBinding.inflate(layoutInflater).also { setContentView(it.root) }
@@ -108,11 +112,17 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
     override fun onBackPressed() {
+        Log.d(TAG, supportFragmentManager.backStackEntryCount.toString())
         if (supportFragmentManager.backStackEntryCount > 1) {
             super.onBackPressed()
         } else {
             finish()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     // todo PB
@@ -219,7 +229,6 @@ class MainActivity : AppCompatActivity() {
 
                 // on crime fragment
                 CRIME_FRAGMENT -> {
-
                     supportActionBar?.let {
                         it.setDisplayHomeAsUpEnabled(true)
                         it.title = resources.getString(R.string.crime_text)

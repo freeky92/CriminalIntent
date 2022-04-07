@@ -3,18 +3,24 @@ package com.asurspace.criminalintent.ui.create_crime
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.model.crimes.CrimesRepository
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.util.CrimesTable
 import com.asurspace.criminalintent.util.share
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(),
-    LifecycleEventObserver {
+@HiltViewModel
+class CreateCrimeVM @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val crimesRepository: CrimesRepository
+) : ViewModel(), LifecycleEventObserver {
 
-    private val crimeDB: CrimesRepository = Repository.crimesRepo
+    private val _uiState = MutableStateFlow() {}
+    val uiState = _uiState.asStateFlow()
 
     private val _titleLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_TITLE)
     val titleLD = _titleLD.share()
@@ -53,8 +59,8 @@ class CreateCrimeVM(private val savedStateHandle: SavedStateHandle) : ViewModel(
     }
 
     fun addCrime() {
-        viewModelScope.launch(Dispatchers.IO) {
-            crimeDB.addCrime(
+        viewModelScope.launch {
+            crimesRepository.addCrime(
                 Crime(
                     id = null,
                     solved = false,

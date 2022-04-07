@@ -14,10 +14,11 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.Repository
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.ui.CrimesRecyclerAdapter
@@ -26,8 +27,10 @@ import com.asurspace.criminalintent.util.CRIME
 import com.asurspace.criminalintent.util.CRIMES_LIST_FRAGMENT
 import com.asurspace.criminalintent.util.TO_CRIME_FRAGMENT
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
-import com.asurspace.criminalintent.util.viewModelCreator
+import com.asurspace.criminalintent.ui.state.UIState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
 
     private val permissionLauncher = registerForActivityResult(
@@ -35,7 +38,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
         ::onGotPermissionResult
     )
 
-    private val viewModel by viewModelCreator { CrimesListVM(Repository.crimesRepo) }
+    private val viewModel by viewModels<CrimesListVM>()
 
     private lateinit var crimesAdapter: CrimesRecyclerAdapter
 
@@ -48,36 +51,53 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment) {
     ): View {
         _binding = CrimesListFragmentBinding.inflate(inflater, container, false)
 
+        crimesAdapter = CrimesRecyclerAdapter(viewModel)
+        subscribeOnLiveData()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycle.addObserver(viewModel)
-
         listenerInitialization()
-
         permissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
     }
 
     private fun listenerInitialization() {
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true).apply {
+                stackFromEnd = true
+            }
         binding.crimeListRv.run {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true).apply {
-                    stackFromEnd = true
-                }
+            this.layoutManager = layoutManager
+            this.adapter = crimesAdapter
         }
-
     }
 
     private fun subscribeOnLiveData() {
-        viewModel.crimeListLD.observe(viewLifecycleOwner) { crimes ->
-            crimesAdapter = CrimesRecyclerAdapter(viewModel, crimes?.toMutableList()) { crime ->
-                setCrimeToResult(crime)
-                (activity as MainActivity).openFragment(CrimeFragment())
+        viewModel.uiState.asLiveData().observe(viewLifecycleOwner) { state ->
+            binding.progressBar.visibility = View.GONE
+            when (state) {
+                is UIState.Empty -> {
+
+                }
+                is UIState.Pending -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is UIState.Error -> {
+
+                }
+                is UIState.Success -> {
+                    crimesAdapter.crimes = state.data
+                }
             }
-            binding.crimeListRv.adapter = crimesAdapter
+        }
+        viewModel.moveToItem.observe(viewLifecycleOwner) { event ->
+            event.get()?.let {
+                setCrimeToResult(it)
+                (requireActivity() as MainActivity).openFragment(CrimeFragment())
+            }
         }
     }
 

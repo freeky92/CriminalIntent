@@ -3,12 +3,13 @@ package com.asurspace.criminalintent.model.crimes.room
 import androidx.room.*
 import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CrimesDao {
 
     @Query("SELECT * FROM crimes")
-    suspend fun getAllCrimes(): MutableList<CrimeDbEntity>
+    fun getAllCrimes(): Flow<List<CrimeDbEntity>>
 
     @Query("SELECT * FROM crimes WHERE id = :id")
     suspend fun findCrimeById(id: Long): CrimeDbEntity?
