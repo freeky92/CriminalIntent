@@ -14,9 +14,6 @@ data class Crime(
     val creationDate: Long?,
     val imageURI: String?
 ) : Parcelable {
-    companion object {
-        const val UNKNOWN_CREATION_DATE = 0L
-    }
 
     fun toMutableCrime(): MutableCrime {
         return MutableCrime(
