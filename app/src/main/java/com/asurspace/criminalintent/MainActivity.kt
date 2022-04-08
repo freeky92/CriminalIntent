@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager
 import com.asurspace.criminalintent.databinding.MainActivityBinding
 import com.asurspace.criminalintent.foundation.Navigator
 import com.asurspace.criminalintent.foundation.ProviderCustomTitle
+import com.asurspace.criminalintent.ui.PreviewFragment
 import com.asurspace.criminalintent.ui.create_crime.CreateCrimeFragment
 import com.asurspace.criminalintent.ui.crimes_list.CrimesListFragment
 import com.google.android.material.snackbar.Snackbar
@@ -192,6 +193,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     private fun onGetPermissionResultAdd(state: Boolean) {
+        if (currentFragment is CreateCrimeFragment) return
         if (state) {
             openFragment(CreateCrimeFragment())
         } else {
@@ -212,7 +214,16 @@ class MainActivity : AppCompatActivity(), Navigator {
         val fragment = currentFragment
         customTitleCheck(fragment)
         actionCheck(fragment)
+        hideToolbar(fragment)
 
+    }
+
+    private fun hideToolbar(fragment: Fragment?) {
+        if (fragment is PreviewFragment) {
+            supportActionBar?.hide()
+        } else {
+            supportActionBar?.show()
+        }
     }
 
     private fun customTitleCheck(fragment: Fragment?) {

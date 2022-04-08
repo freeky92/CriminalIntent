@@ -23,10 +23,10 @@ import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
 import com.asurspace.criminalintent.foundation.ProviderCustomTitle
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.ui.PreviewFragment
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.util.UtilPermissions.hasPermissions
-import com.asurspace.criminalintent.util.ui.PreviewFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -45,7 +45,7 @@ class CrimeFragment : Fragment(R.layout.crime_fragment), ProviderCustomTitle {
     private var _binding: CrimeFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModels<CrimeVM> ()
+    private val viewModel by viewModels<CrimeVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -132,12 +132,19 @@ class CrimeFragment : Fragment(R.layout.crime_fragment), ProviderCustomTitle {
             }.show()
         }
 
-        binding.crimeIv.setOnClickListener {
-            val uri = viewModel.imageUriLD.value.toString()
-            if (uri != "null") {
-                (activity as MainActivity).openFragment(PreviewFragment())
-                setImageResult(uri)
+        with(binding.crimeIv) {
+            setOnClickListener {
+                val uri = viewModel.imageUriLD.value.toString()
+                if (uri != "null") {
+                    (activity as MainActivity).openFragment(PreviewFragment())
+                    setImageResult(uri)
+                }
             }
+            setOnLongClickListener {
+                viewModel.setUpdatedImage(Uri.EMPTY)
+                true
+            }
+
         }
 
     }
@@ -146,7 +153,6 @@ class CrimeFragment : Fragment(R.layout.crime_fragment), ProviderCustomTitle {
         viewModel.crimeLD.observe(viewLifecycleOwner) {
             viewModel.setFields()
             restoreValue()
-            // TODO: 25.01.2022 - setFragmentResult
         }
 
         viewModel.imageUriLD.observe(viewLifecycleOwner) {

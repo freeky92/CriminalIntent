@@ -55,14 +55,14 @@ class CrimeVM @Inject constructor(
     }
 
     fun remove() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
             _isRemoved.postValue(crimeDB.deleteCrime(_crimeId.value ?: 0))
         }
     }
 
     private fun update() {
         setChanges()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
             crimeDB.updateCrime(crimeLD.value)
         }
     }

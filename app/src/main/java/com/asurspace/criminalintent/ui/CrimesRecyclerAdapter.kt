@@ -11,6 +11,7 @@ import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 
 interface CrimesActionListener {
@@ -55,8 +56,7 @@ class CrimesRecyclerAdapter(
             suspect.text = crime.suspect
             if (!crime.imageURI.isNullOrBlank()) {
                 Glide.with(root.context).load(Uri.parse(crime.imageURI))
-                    .placeholder(R.drawable.ic_baseline_insert_photo_24)
-                    .error(R.drawable.ic_baseline_insert_photo_24)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(rvCrimeImage)
             }
 

@@ -1,4 +1,4 @@
-package com.asurspace.criminalintent.util.ui
+package com.asurspace.criminalintent.ui
 
 import android.net.Uri
 import android.os.Bundle

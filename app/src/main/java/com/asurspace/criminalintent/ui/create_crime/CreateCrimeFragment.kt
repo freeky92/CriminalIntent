@@ -19,9 +19,9 @@ import com.asurspace.criminalintent.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.CreateCrimeFragmentBinding
 import com.asurspace.criminalintent.foundation.ProviderCustomTitle
+import com.asurspace.criminalintent.ui.PreviewFragment
 import com.asurspace.criminalintent.util.*
 import com.asurspace.criminalintent.util.UtilPermissions.PERMISSIONS
-import com.asurspace.criminalintent.util.ui.PreviewFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -32,7 +32,8 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment), ProviderCu
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument(), ::onGotImageResult)
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument(), ::onGotImageResult)
 
     private var _binding: CreateCrimeFragmentBinding? = null
     private val binding get() = _binding!!
@@ -99,13 +100,19 @@ class CreateCrimeFragment : Fragment(R.layout.create_crime_fragment), ProviderCu
                 onBackPressed()
             }
         }
-
-        binding.crimeIv.setOnClickListener {
-            if (viewModel.imageUriLD.value != null) {
-                (activity as MainActivity).openFragment(PreviewFragment())
-                setImageResult(viewModel.imageUriLD.value.toString())
+        with(binding.crimeIv) {
+            setOnClickListener {
+                if (viewModel.imageUriLD.value != null) {
+                    (activity as MainActivity).openFragment(PreviewFragment())
+                    setImageResult(viewModel.imageUriLD.value.toString())
+                }
+            }
+            setOnLongClickListener {
+                viewModel.setUpdatedImage(Uri.EMPTY)
+                true
             }
         }
+
 
     }
 
