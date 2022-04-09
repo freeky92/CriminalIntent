@@ -11,9 +11,9 @@ import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
 )
 //@TypeConverters(Converters::class)
 abstract class CrimesDatabase : RoomDatabase() {
-    abstract fun getSearchCrimesDao(): SearchCrimesDao
     abstract fun getCreateCrimeDao(): CreateCrimeDao
-    abstract fun getUpdateCrimeDao(): UpdateCrimeDao
+    abstract fun getGetCrimesListDao(): GetCrimesDao
     abstract fun getRemoveCrimeDao(): RemoveCrimeDao
-    abstract fun getCrimesListDao(): GetCrimesDao
+    abstract fun getSearchCrimesDao(): SearchCrimesDao
+    abstract fun getUpdateCrimeDao(): UpdateCrimeDao
 }

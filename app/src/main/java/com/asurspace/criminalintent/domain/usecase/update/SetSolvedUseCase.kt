@@ -1,14 +1,14 @@
 package com.asurspace.criminalintent.domain.usecase.update
 
 import com.asurspace.criminalintent.domain.repository.GetAddUpdateCrimeRepository
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import javax.inject.Inject
 
-class UpdateCrimeUseCase @Inject constructor(
+class SetSolvedUseCase @Inject constructor(
     private val getAddUpdateCrimeRepository: GetAddUpdateCrimeRepository
 ) {
-    suspend operator fun invoke(crime: Crime?) {
-        getAddUpdateCrimeRepository.updateCrime(crime)
+    suspend operator fun invoke(statusTuples: SetSolvedTuples){
+        getAddUpdateCrimeRepository.setSolved(statusTuples)
     }
 
 }

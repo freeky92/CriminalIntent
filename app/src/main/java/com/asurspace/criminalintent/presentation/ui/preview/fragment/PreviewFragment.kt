@@ -64,4 +64,6 @@ class PreviewFragment : Fragment() {
         fragmentResumeResult()
     }
 
+    companion object
+
 }

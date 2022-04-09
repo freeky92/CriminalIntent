@@ -26,6 +26,7 @@ import com.asurspace.criminalintent.presentation.common.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.presentation.ui.MainActivity
 import com.asurspace.criminalintent.presentation.ui.crime.fragment.EditCrimeFragment
 import com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel.CrimesListVM
+import com.asurspace.criminalintent.presentation.ui.preview.fragment.PreviewFragment
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -102,6 +103,7 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
             openPreview.observe(viewLifecycleOwner) { event ->
                 event.get()?.let { uri ->
                     setCrimeToResult(uri, PREVIEW)
+                    (activity as MainActivity).openFragment(PreviewFragment())
                 }
             }
         }

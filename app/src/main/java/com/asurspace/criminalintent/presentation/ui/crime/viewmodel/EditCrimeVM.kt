@@ -2,19 +2,22 @@ package com.asurspace.criminalintent.presentation.ui.crime.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.domain.repository.SearchCrimesRepository
-import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.common.utils.CRIME
 import com.asurspace.criminalintent.common.utils.share
-import com.asurspace.criminalintent.domain.repository.EditCrimeRepository
+import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
+import com.asurspace.criminalintent.domain.usecase.update.UpdateCrimeUseCase
+import com.asurspace.criminalintent.model.crimes.entities.Crime
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class EditCrimeVM @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val editCrimeRepository: EditCrimeRepository
+    private val removeCrimeUseCase: RemoveCrimeUseCase,
+    private val updateCrimeUseCase: UpdateCrimeUseCase
 ) : ViewModel(), LifecycleEventObserver {
 
     private var _crimeId = MutableLiveData<Long?>()
@@ -54,15 +57,18 @@ class EditCrimeVM @Inject constructor(
     }
 
     fun remove() {
-        viewModelScope.launch{
-            _isRemoved.postValue(editCrimeRepository.deleteCrime(_crimeId.value ?: 0))
+        viewModelScope.launch {
+            val num = withContext(Dispatchers.Default) {
+                removeCrimeUseCase(_crimeId.value ?: 0)
+            }
+            _isRemoved.postValue(num)
         }
     }
 
     private fun update() {
         setChanges()
-        viewModelScope.launch{
-            editCrimeRepository.updateCrime(crimeLD.value)
+        viewModelScope.launch {
+            updateCrimeUseCase(crimeLD.value)
         }
     }
 
@@ -127,7 +133,7 @@ class EditCrimeVM @Inject constructor(
         if (!savedStateHandle.contains(CRIME)
             || savedStateHandle.get<Crime>(CRIME) != _crimeLD.value
         ) {
-            savedStateHandle.set(CRIME, _crimeLD.value)
+            savedStateHandle[CRIME] = _crimeLD.value
         }
     }
 

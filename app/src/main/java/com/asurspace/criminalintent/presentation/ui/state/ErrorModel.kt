@@ -1,4 +1,4 @@
-package com.example.frequency.foundation.model.state
+package com.asurspace.criminalintent.presentation.ui.state
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes

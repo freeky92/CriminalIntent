@@ -1,31 +1,34 @@
 package com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel
 
-import android.net.Uri
+import android.provider.Contacts
 import android.util.Log
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.common.utils.Event
 import com.asurspace.criminalintent.common.utils.share
-import com.asurspace.criminalintent.domain.repository.CrimesListRepository
+import com.asurspace.criminalintent.domain.usecase.get.GetCrimesListUseCase
+import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
+import com.asurspace.criminalintent.domain.usecase.update.SetSolvedUseCase
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import com.asurspace.criminalintent.presentation.common.CrimesActionListener
+import com.asurspace.criminalintent.presentation.ui.state.ErrorModel
 import com.asurspace.criminalintent.presentation.ui.state.UIState
-import com.example.frequency.foundation.model.state.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class CrimesListVM @Inject constructor(
-    private val crimesListRepository: CrimesListRepository
+    private val getCrimesListUseCase: GetCrimesListUseCase,
+    private val removeCrimeUseCase: RemoveCrimeUseCase,
+    private val setSolvedUseCase: SetSolvedUseCase
+
 ) : ViewModel(), CrimesActionListener {
 
     private val _uiState = MutableStateFlow<UIState<MutableList<Crime>>>(UIState.Empty)
@@ -40,7 +43,7 @@ class CrimesListVM @Inject constructor(
     private var crimeList = mutableListOf<Crime>()
 
     init {
-        if (crimeList.isEmpty()) {
+        if (_uiState.value is UIState.Empty){
             loadCrimeList()
         }
         Log.d(TAG, crimeList.toString())
@@ -50,19 +53,9 @@ class CrimesListVM @Inject constructor(
         viewModelScope.launch {
             _uiState.value = UIState.Pending
             try {
-                crimeList
-                crimesListRepository.getAllCrimes(false).collect() {
-                    Log.d(TAG, crimeList.toString())
+                getCrimesListUseCase.invoke().collect{
                     _uiState.value = UIState.Success(it)
                 }
-                /*flow<Crime> {
-                    crimeRepository.getAllCrimes(false).collect{
-
-                    }
-                }
-
-                _uiState.value = UIState.Success()*/
-
             } catch (ex: IOException) {
                 Log.d(TAG, ex.message.toString())
                 onError(message = R.string.io_err)
@@ -76,19 +69,17 @@ class CrimesListVM @Inject constructor(
 
     override fun onCrimeDelete(id: Long) {
         viewModelScope.launch {
-            crimesListRepository.deleteCrime(id)
+            removeCrimeUseCase(id)
         }
     }
 
     override fun onStateChanged(id: Long, solved: Boolean, index: Int) {
         viewModelScope.launch {
-            crimesListRepository.setSolved(SetSolvedTuples(id, solved))
+            setSolvedUseCase(SetSolvedTuples(id, solved))
         }
         if (!crimeList.isNullOrEmpty()) {
-            val list = crimeList
-            val crime = list[index].copy(solved = solved)
-            list[index] = crime
-            crimeList = list
+            val crime = crimeList[index].copy(solved = solved)
+            crimeList[index] = crime
         }
     }
 

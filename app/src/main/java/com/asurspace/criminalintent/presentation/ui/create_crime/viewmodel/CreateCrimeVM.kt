@@ -3,11 +3,10 @@ package com.asurspace.criminalintent.presentation.ui.create_crime.viewmodel
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.domain.repository.SearchCrimesRepository
-import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.common.utils.CrimesTable
 import com.asurspace.criminalintent.common.utils.share
-import com.asurspace.criminalintent.domain.repository.CreateCrimeRepository
+import com.asurspace.criminalintent.domain.usecase.create.CreateCrimeUseCase
+import com.asurspace.criminalintent.model.crimes.entities.Crime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,10 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateCrimeVM @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val createCrimeRepository: CreateCrimeRepository
+    private val createCrimeUseCase: CreateCrimeUseCase
 ) : ViewModel(), LifecycleEventObserver {
 
-    private val _uiState = MutableStateFlow() {}
+    private val _uiState = MutableStateFlow {}
     val uiState = _uiState.asStateFlow()
 
     private val _titleLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_TITLE)
@@ -61,7 +60,7 @@ class CreateCrimeVM @Inject constructor(
 
     fun addCrime() {
         viewModelScope.launch {
-            createCrimeRepository.addCrime(
+            createCrimeUseCase(
                 Crime(
                     id = null,
                     solved = false,
@@ -79,25 +78,25 @@ class CreateCrimeVM @Inject constructor(
         if (!savedStateHandle.contains(CrimesTable.COLUMN_TITLE)
             || savedStateHandle.get<String>(CrimesTable.COLUMN_TITLE) != titleLD.value
         ) {
-            savedStateHandle.set(CrimesTable.COLUMN_TITLE, titleLD.value)
+            savedStateHandle[CrimesTable.COLUMN_TITLE] = titleLD.value
         }
 
         if (!savedStateHandle.contains(CrimesTable.COLUMN_SUSPECT)
             || savedStateHandle.get<String>(CrimesTable.COLUMN_SUSPECT) != suspectLD.value
         ) {
-            savedStateHandle.set(CrimesTable.COLUMN_SUSPECT, suspectLD.value)
+            savedStateHandle[CrimesTable.COLUMN_SUSPECT] = suspectLD.value
         }
 
         if (!savedStateHandle.contains(CrimesTable.COLUMN_DESCRIPTION)
             || savedStateHandle.get<String>(CrimesTable.COLUMN_DESCRIPTION) != descriptionLD.value
         ) {
-            savedStateHandle.set(CrimesTable.COLUMN_DESCRIPTION, descriptionLD.value)
+            savedStateHandle[CrimesTable.COLUMN_DESCRIPTION] = descriptionLD.value
         }
 
         if (!savedStateHandle.contains(CrimesTable.COLUMN_IMAGE_URI)
             || savedStateHandle.get<Uri>(CrimesTable.COLUMN_IMAGE_URI) != imageUriLD.value
         ) {
-            savedStateHandle.set(CrimesTable.COLUMN_IMAGE_URI, imageUriLD.value)
+            savedStateHandle[CrimesTable.COLUMN_IMAGE_URI] = imageUriLD.value
         }
     }
 
