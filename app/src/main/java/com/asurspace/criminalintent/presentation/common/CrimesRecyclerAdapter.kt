@@ -12,21 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel.CrimesActionListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-
-
-interface CrimesActionListener {
-
-    fun onCrimeDelete(id: Long)
-
-    fun onStateChanged(id: Long, solved: Boolean, index: Int)
-
-    fun onItemSelect(crime: Crime)
-
-    fun onImageClicked(image: String)
-
-}
 
 class CrimesRecyclerAdapter(
     private val actionListener: CrimesActionListener,
@@ -50,7 +38,6 @@ class CrimesRecyclerAdapter(
         val crime = crimes[position]
 
         holder.binding.apply {
-            holder.itemView.tag = crime
             popUpMenu.tag = crime
 
             rvSolvedCb.isChecked = crime.solved!!
@@ -68,15 +55,19 @@ class CrimesRecyclerAdapter(
                 }
             }
 
-            rvCrimeImage.setOnClickListener {
-                actionListener.onImageClicked(crime.imageURI!!)
-            }
+            if (!crime.imageURI.isNullOrBlank() && crime.imageURI != "null") {
+                Log.d(TAG, crimes.size.toString())
 
-            if (!crime.imageURI.isNullOrBlank()) {
+                        Log.d(TAG, "\nlayoutPosition:${holder.layoutPosition}\n" +
+                        "oldPosition:${holder.oldPosition}\nbindingPosition:${holder.bindingAdapterPosition}\n" +
+                        "absoluteAP:${holder.absoluteAdapterPosition}\nposition:$position ${crime.imageURI}")
                 Glide.with(root.context).load(Uri.parse(crime.imageURI))
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(rvCrimeImage)
+                rvCrimeImage.setOnClickListener {
+                    actionListener.onImageClicked(crime.imageURI)
+                }
             }
 
             popUpMenu.setOnClickListener {
@@ -88,9 +79,12 @@ class CrimesRecyclerAdapter(
 
     override fun getItemCount(): Int = crimes.size
 
-    override fun onViewRecycled(holder: CrimeViewHolder) {
-        super.onViewRecycled(holder)
-        holder.binding.rvSolvedCb.setOnCheckedChangeListener(null)
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
     private fun showPopUpMenu(view: View) {

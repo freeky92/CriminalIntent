@@ -12,15 +12,3 @@ class GetCrimesListUseCase @Inject constructor(
         return getAddUpdateCrimeRepository.getAllCrimes()
     }
 }
-
-/*
-operator fun invoke(): Flow<Resource<MutableList<Crime>>> = flow {
-    try {
-        val crimes = getAddUpdateCrimeRepository.getAllCrimes()
-        emit(Resource.Success(crimes))
-    } catch (e: IOException) {
-        emit(
-            Resource.Error(message = e.localizedMessage ?: "An unexpected error while getting data")
-        )
-    }
-}*/

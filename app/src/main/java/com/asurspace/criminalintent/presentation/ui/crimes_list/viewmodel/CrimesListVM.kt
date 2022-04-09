@@ -13,7 +13,6 @@ import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
 import com.asurspace.criminalintent.domain.usecase.update.SetSolvedUseCase
 import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
-import com.asurspace.criminalintent.presentation.common.CrimesActionListener
 import com.asurspace.criminalintent.presentation.ui.state.ErrorModel
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
