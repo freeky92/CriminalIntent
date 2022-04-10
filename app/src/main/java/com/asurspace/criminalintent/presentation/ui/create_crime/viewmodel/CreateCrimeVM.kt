@@ -7,6 +7,7 @@ import com.asurspace.criminalintent.common.utils.CrimesTable
 import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.create.CreateCrimeUseCase
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,7 @@ class CreateCrimeVM @Inject constructor(
     private val createCrimeUseCase: CreateCrimeUseCase
 ) : ViewModel(), LifecycleEventObserver {
 
-    private val _uiState = MutableStateFlow {}
+    private val _uiState = MutableStateFlow<UIState<Crime>>(UIState.Empty)
     val uiState = _uiState.asStateFlow()
 
     private val _titleLD = savedStateHandle.getLiveData<String>(CrimesTable.COLUMN_TITLE)

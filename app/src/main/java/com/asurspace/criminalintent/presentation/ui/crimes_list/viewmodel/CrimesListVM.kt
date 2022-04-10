@@ -1,6 +1,5 @@
 package com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel
 
-import android.provider.Contacts
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

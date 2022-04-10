@@ -34,19 +34,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-
-        /*debug {
-            isDebuggable = rootProject.ext.get("debuggable_release") as Boolean
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-
-            applicationIdSuffix = ".dedug"
-            versionNameSuffix = "-dedug"
-        }*/
-
         applicationVariants.all {
             val variant = this
             variant.outputs
