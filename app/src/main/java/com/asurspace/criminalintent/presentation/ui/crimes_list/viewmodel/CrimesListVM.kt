@@ -1,9 +1,7 @@
 package com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.common.utils.Event
 import com.asurspace.criminalintent.common.utils.share
@@ -14,6 +12,7 @@ import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
 import com.asurspace.criminalintent.presentation.ui.state.ErrorModel
 import com.asurspace.criminalintent.presentation.ui.state.UIState
+import com.asurspace.criminalintent.presentation.ui.state.getMutableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,12 +24,15 @@ import javax.inject.Inject
 class CrimesListVM @Inject constructor(
     private val getCrimesListUseCase: GetCrimesListUseCase,
     private val removeCrimeUseCase: RemoveCrimeUseCase,
-    private val setSolvedUseCase: SetSolvedUseCase
-
+    private val setSolvedUseCase: SetSolvedUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel(), CrimesActionListener {
 
     private val _uiState = MutableStateFlow<UIState<MutableList<Crime>>>(UIState.Empty)
     val uiState = _uiState.asStateFlow()
+
+    /*private val _uiState: MutableStateFlow<UIState<MutableList<Crime>>> = savedStateHandle.getMutableStateFlow("usState", UIState.Empty)
+    val uiState = _uiState*/
 
     private val _moveToCrime = MutableLiveData<Event<Crime>>()
     val moveToItem = _moveToCrime.share()
@@ -97,6 +99,15 @@ class CrimesListVM @Inject constructor(
                 message = message
             )
         )
+    }
+
+    /*private fun saveToState(){
+        savedStateHandle["usState"] = _uiState.asLiveData().value
+    }*/
+
+    override fun onCleared() {
+        super.onCleared()
+        //saveToState()
     }
 
     companion object {
