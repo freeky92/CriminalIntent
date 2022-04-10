@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel.CrimesActionListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.checkbox.MaterialCheckBox
 
 class CrimesRecyclerAdapter(
     private val actionListener: CrimesActionListener,
@@ -47,33 +49,35 @@ class CrimesRecyclerAdapter(
             root.setOnClickListener {
                 actionListener.onItemSelect(crime)
             }
-
-            rvSolvedCb.setOnCheckedChangeListener { _, b ->
-                crime.id?.let {
-                    val index = crimes.findIndexById(crime.id)
-                    actionListener.onStateChanged(it, b, index)
-                }
-            }
-
-            if (!crime.imageURI.isNullOrBlank() && crime.imageURI != "null") {
-                Log.d(TAG, crimes.size.toString())
-
-                        Log.d(TAG, "\nlayoutPosition:${holder.layoutPosition}\n" +
-                        "oldPosition:${holder.oldPosition}\nbindingPosition:${holder.bindingAdapterPosition}\n" +
-                        "absoluteAP:${holder.absoluteAdapterPosition}\nposition:$position ${crime.imageURI}")
-                Glide.with(root.context).load(Uri.parse(crime.imageURI))
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(rvCrimeImage)
-                rvCrimeImage.setOnClickListener {
-                    actionListener.onImageClicked(crime.imageURI)
-                }
-            }
-
             popUpMenu.setOnClickListener {
                 showPopUpMenu(it)
             }
 
+            setCheckedCheckListener(rvSolvedCb, crime)
+            setImage(root, rvCrimeImage, crime)
+        }
+    }
+
+    private fun setCheckedCheckListener(view: MaterialCheckBox, crime: Crime) {
+        view.setOnCheckedChangeListener { _, b ->
+            crime.id?.let {
+                val index = crimes.findIndexById(crime.id)
+                actionListener.onStateChanged(it, b, index)
+            }
+        }
+    }
+
+    private fun setImage(root: View, imageView: ImageView, crime: Crime) {
+        if (!crime.imageURI.isNullOrBlank() && crime.imageURI != "null") {
+            Log.d(TAG, crimes.size.toString())
+
+            Glide.with(root.context).load(Uri.parse(crime.imageURI))
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .into(imageView)
+            imageView.setOnClickListener {
+                actionListener.onImageClicked(crime.imageURI)
+            }
         }
     }
 
@@ -85,6 +89,13 @@ class CrimesRecyclerAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return position
+    }
+
+    override fun onViewRecycled(holder: CrimeViewHolder) {
+        super.onViewRecycled(holder)
+        holder.binding.rvSolvedCb.setOnCheckedChangeListener(null)
+        holder.binding.rvCrimeImage.setOnClickListener(null)
+        holder.binding.rvCrimeImage.setImageResource(0)
     }
 
     private fun showPopUpMenu(view: View) {
@@ -110,7 +121,6 @@ class CrimesRecyclerAdapter(
             }
             return@setOnMenuItemClickListener true
         }
-
         popupMenu.show()
     }
 
