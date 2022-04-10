@@ -83,14 +83,6 @@ class CrimesRecyclerAdapter(
 
     override fun getItemCount(): Int = crimes.size
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
     override fun onViewRecycled(holder: CrimeViewHolder) {
         super.onViewRecycled(holder)
         holder.binding.rvSolvedCb.setOnCheckedChangeListener(null)
