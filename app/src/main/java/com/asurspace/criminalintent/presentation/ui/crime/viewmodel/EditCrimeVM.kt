@@ -7,8 +7,12 @@ import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
 import com.asurspace.criminalintent.domain.usecase.update.UpdateCrimeUseCase
 import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
+import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,6 +23,12 @@ class EditCrimeVM @Inject constructor(
     private val removeCrimeUseCase: RemoveCrimeUseCase,
     private val updateCrimeUseCase: UpdateCrimeUseCase
 ) : ViewModel(), LifecycleEventObserver {
+
+    private val fromState = savedStateHandle.get<Crime>(SAVED_STATE_CRIME) ?: emptyCrime()
+    private val getState = if (fromState != emptyCrime()) UIState.Success(fromState) else UIState.Empty
+
+    private val _uiState = MutableStateFlow(getState)
+    val uiState = _uiState.asStateFlow()
 
     private var _crimeId = MutableLiveData<Long?>()
 
@@ -156,6 +166,14 @@ class EditCrimeVM @Inject constructor(
             Lifecycle.Event.ON_ANY -> {
             }
         }
+    }
+
+    companion object {
+        @JvmStatic
+        private val TAG = "EditCrimeVM"
+
+        @JvmStatic
+        private val SAVED_STATE_CRIME = "SAVED_STATE_CRIME"
     }
 
 }

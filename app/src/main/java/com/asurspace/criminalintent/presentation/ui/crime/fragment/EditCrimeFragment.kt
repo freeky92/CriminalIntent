@@ -18,16 +18,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import com.asurspace.criminalintent.presentation.ui.MainActivity
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.common.utils.*
-import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
-import com.asurspace.criminalintent.navigation.ProviderCustomTitle
-import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.common.utils.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.common.utils.UtilPermissions.hasPermissions
-import com.asurspace.criminalintent.presentation.ui.preview.fragment.PreviewFragment
+import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
+import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.navigation.ProviderCustomTitle
+import com.asurspace.criminalintent.presentation.ui.MainActivity
 import com.asurspace.criminalintent.presentation.ui.crime.viewmodel.EditCrimeVM
+import com.asurspace.criminalintent.presentation.ui.preview.fragment.PreviewFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -252,4 +252,19 @@ class EditCrimeFragment : Fragment(R.layout.crime_fragment), ProviderCustomTitle
     }
 
     override fun getTitle() = R.string.crime_details
+
+    companion object {
+        @JvmStatic
+        private val TAG = "EditCrimeFragment"
+
+        @JvmStatic
+        private val ARG_CRIME = "ARG_CRIME"
+
+
+        @JvmStatic
+        fun newInstance(crime: Crime) = EditCrimeFragment.apply {
+
+        }
+
+    }
 }
