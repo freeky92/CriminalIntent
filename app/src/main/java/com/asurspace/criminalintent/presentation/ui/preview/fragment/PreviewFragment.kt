@@ -2,22 +2,21 @@ package com.asurspace.criminalintent.presentation.ui.preview.fragment
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import com.asurspace.criminalintent.databinding.FragmentPreviewBinding
-import com.asurspace.criminalintent.common.utils.IMAGE
-import com.asurspace.criminalintent.common.utils.PREVIEW
 import com.asurspace.criminalintent.common.utils.PREVIEW_FRAGMENT
+import com.asurspace.criminalintent.databinding.FragmentPreviewBinding
+import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.presentation.ui.MainActivity
+import com.asurspace.criminalintent.presentation.ui.crime.fragment.EditCrimeFragment
 
 class PreviewFragment : Fragment() {
 
     private var _binding: FragmentPreviewBinding? = null
-
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -32,18 +31,10 @@ class PreviewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setImage(requireArguments().getString(ARG_URI) ?: "")
+
         binding.previewIv.setOnClickListener {
             activity?.onBackPressed()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setFragmentResultListener(PREVIEW) { _, b ->
-            val result = b.getString(IMAGE).toString()
-            if (result.isNotEmpty()) {
-                binding.previewIv.setImageURI(Uri.parse(result))
-            }
         }
     }
 
@@ -64,6 +55,26 @@ class PreviewFragment : Fragment() {
         fragmentResumeResult()
     }
 
-    companion object
+    private fun setImage(uri: String) {
+        if (uri.isNotBlank()) {
+            binding.previewIv.setImageURI(Uri.parse(uri))
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        private val ARG_URI = "ARG_URI"
+
+        @JvmStatic
+        private val TAG = "PreviewFragment"
+
+        @JvmStatic
+        fun newInstance(uri: String) = PreviewFragment().apply {
+            Log.d(TAG, uri)
+            arguments = bundleOf(
+                ARG_URI to uri
+            )
+        }
+    }
 
 }

@@ -1,8 +1,8 @@
 package com.asurspace.criminalintent.presentation.ui.crime.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
-import com.asurspace.criminalintent.common.utils.CRIME
 import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
 import com.asurspace.criminalintent.domain.usecase.update.UpdateCrimeUseCase
@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,147 +25,93 @@ class EditCrimeVM @Inject constructor(
     private val updateCrimeUseCase: UpdateCrimeUseCase
 ) : ViewModel(), LifecycleEventObserver {
 
-    private val fromState = savedStateHandle.get<Crime>(SAVED_STATE_CRIME) ?: emptyCrime()
-    private val getState = if (fromState != emptyCrime()) UIState.Success(fromState) else UIState.Empty
+    private val state = savedStateHandle.get<Crime>(SAVED_STATE_CRIME)
 
-    private val _uiState = MutableStateFlow(getState)
+    private var currentCrime = state ?: emptyCrime()
+
+    private val _uiState = MutableStateFlow<UIState<Crime>>(UIState.Empty)
     val uiState = _uiState.asStateFlow()
-
-    private var _crimeId = MutableLiveData<Long?>()
-
-    private val _crimeLD = savedStateHandle.getLiveData<Crime?>(CRIME)
-    val crimeLD = _crimeLD.share()
-
-    private val _solvedLD = MutableLiveData<Boolean?>()
-    val solvedLD = _solvedLD.share()
-
-    private val _titleLD = MutableLiveData<String?>()
-    val titleLD = _titleLD.share()
-
-    private val _suspectLD = MutableLiveData<String?>()
-    val suspectLD = _suspectLD.share()
-
-    private val _descriptionLD = MutableLiveData<String?>()
-    val descriptionLD = _descriptionLD.share()
-
-    private val _cDateLD = MutableLiveData<Long?>()
-    val cDateLD = _cDateLD.share()
-
-    private val _imageUriLD = MutableLiveData<Uri>()
-    val imageUriLD = _imageUriLD.share()
 
     private val _isRemoved = MutableLiveData<Int>()
     val isRemoved = _isRemoved.share()
 
-    fun setCrime(crime: Crime?) {
-        _crimeLD.value = crime
+    init {
+        Log.d(TAG, "state = $state")
     }
 
-    fun setCrimeId(id: Long?) {
-        if (_crimeId.value != id) {
-            _crimeId.value = id
+    fun setCrime(crime: Crime) {
+        if (crime != currentCrime) {
+            currentCrime = crime
+            updateUIState()
         }
     }
 
     fun remove() {
         viewModelScope.launch {
             val num = withContext(Dispatchers.Default) {
-                removeCrimeUseCase(_crimeId.value ?: 0)
+                removeCrimeUseCase(currentCrime.id ?: 0)
             }
             _isRemoved.postValue(num)
         }
     }
 
     private fun update() {
-        setChanges()
         viewModelScope.launch {
-            updateCrimeUseCase(crimeLD.value)
-        }
-    }
-
-    fun setFields() {
-        with(crimeLD.value) {
-            _crimeId.value = this?.id
-            _solvedLD.value = this?.solved
-            _titleLD.value = this?.title
-            _suspectLD.value = this?.suspect
-            _descriptionLD.value = this?.description
-            _cDateLD.value = this?.creationDate
-            _imageUriLD.value = Uri.parse(this?.imageURI)
+            updateCrimeUseCase(currentCrime)
         }
     }
 
     fun setSolvedState(state: Boolean) {
-        if (solvedLD.value != state) {
-            _solvedLD.value = state
+        if (currentCrime.solved != state) {
+            currentCrime = currentCrime.copy(solved = state)
         }
     }
 
     fun setUpdatedTitle(title: String?) {
-        if (titleLD.value != title) {
-            _titleLD.value = title
+        if (currentCrime.title != title) {
+            currentCrime = currentCrime.copy(title = title)
         }
     }
 
     fun setUpdatedSuspect(suspect: String?) {
-        if (suspectLD.value != suspect) {
-            _suspectLD.value = suspect
+        if (currentCrime.suspect != suspect) {
+            currentCrime = currentCrime.copy(suspect = suspect)
         }
     }
 
     fun setUpdatedDescription(description: String?) {
-        if (descriptionLD.value != description) {
-            _descriptionLD.value = description
+        if (currentCrime.description != description) {
+            currentCrime = currentCrime.copy(description = description)
         }
     }
 
     fun setUpdatedImage(uri: Uri) {
-        if (imageUriLD.value != uri) {
-            _imageUriLD.value = uri
+        if (currentCrime.imageURI != uri.toString()) {
+            currentCrime = currentCrime.copy(imageURI = uri.toString())
         }
+        updateUIState()
     }
 
-    private fun setChanges() {
-        val updatedCrime = crimeLD.value?.toMutableCrime()
-        with(updatedCrime) {
-            this?.solved = solvedLD.value
-            this?.title = titleLD.value
-            this?.suspect = suspectLD.value
-            this?.desciption = descriptionLD.value
-            this?.creationDate = cDateLD.value
-            this?.imageURI = imageUriLD.value.toString()
-        }
-        if (crimeLD.value != updatedCrime?.toCrime()) {
-            _crimeLD.value = updatedCrime?.toCrime()
-        }
-    }
-
-    private fun initSSH() {
-        if (!savedStateHandle.contains(CRIME)
-            || savedStateHandle.get<Crime>(CRIME) != _crimeLD.value
-        ) {
-            savedStateHandle[CRIME] = _crimeLD.value
-        }
+    private fun updateUIState(){
+        _uiState.update { UIState.Success(currentCrime) }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
+
             Lifecycle.Event.ON_CREATE -> {
+                Log.d(TAG, currentCrime.toString())
             }
-            Lifecycle.Event.ON_START -> {
-            }
-            Lifecycle.Event.ON_RESUME -> {
-            }
+
             Lifecycle.Event.ON_PAUSE -> {
                 update()
-            }
-            Lifecycle.Event.ON_STOP -> {
+                updateUIState()
             }
             Lifecycle.Event.ON_DESTROY -> {
-                initSSH()
+                Log.d(TAG, currentCrime.toString())
+                savedStateHandle.set(SAVED_STATE_CRIME, currentCrime)
             }
-            Lifecycle.Event.ON_ANY -> {
-            }
+            else -> {}
         }
     }
 

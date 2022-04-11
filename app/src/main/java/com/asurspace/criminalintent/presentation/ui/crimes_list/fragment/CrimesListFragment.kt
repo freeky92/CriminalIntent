@@ -10,15 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asurspace.criminalintent.R
-import com.asurspace.criminalintent.common.utils.*
 import com.asurspace.criminalintent.common.utils.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.navigation.ProviderCustomTitle
@@ -96,33 +93,15 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
             }
             moveToItem.observe(viewLifecycleOwner) { event ->
                 event.get()?.let { crime ->
-                    setCrimeToResult(crime, TO_CRIME_FRAGMENT)
-                    (requireActivity() as MainActivity).openFragment(EditCrimeFragment())
+                    (requireActivity() as MainActivity).openFragment(EditCrimeFragment.newInstance(crime))
                 }
             }
             openPreview.observe(viewLifecycleOwner) { event ->
                 event.get()?.let { uri ->
-                    setCrimeToResult(uri, PREVIEW)
-                    (activity as MainActivity).openFragment(PreviewFragment())
+                    (activity as MainActivity).openFragment(PreviewFragment.newInstance(uri))
                 }
             }
         }
-
-    }
-
-    private fun setCrimeToResult(obj: Any, destination: String) {
-        val name = if (destination == TO_CRIME_FRAGMENT) CRIME else IMAGE
-        setFragmentResult(
-            destination,
-            bundleOf(name to obj)
-        )
-    }
-
-    private fun fragmentResumeResult() {
-        requireActivity().supportFragmentManager.setFragmentResult(
-            MainActivity.NAVIGATION_EVENT,
-            bundleOf(MainActivity.NAVIGATION_EVENT_FRAGMENT_NAME_DATA_KEY to CRIMES_LIST_FRAGMENT)
-        )
     }
 
     private fun onGotPermissionResult(results: Map<String, Boolean>) {
@@ -156,11 +135,6 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
                 startSettingActivityIntent
             )
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        fragmentResumeResult()
     }
 
     override fun onDestroyView() {
