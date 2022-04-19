@@ -26,17 +26,13 @@ import com.asurspace.criminalintent.presentation.ui.preview.fragment.PreviewFrag
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Navigator {
 
     private val permissionLauncherAdd = registerForActivityResult(
         RequestPermission(),
         ::onGetPermissionResultAdd
-    )
-
-    private val permissionLauncherShowSub = registerForActivityResult(
-        RequestPermission(),
-        ::onGetPermissionResultShowSub
     )
 
     private val currentFragment get() = supportFragmentManager.findFragmentById(R.id.main_container)
@@ -51,9 +47,9 @@ class MainActivity : AppCompatActivity(), Navigator {
 
         binding = MainActivityBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
-        setSupportActionBar(binding.actionBar)
-        addItem = binding.actionBar.menu.findItem(R.id.action_add)
-        showSubtitle = binding.actionBar.menu.findItem(R.id.action_show_subtitle)
+        setSupportActionBar(binding.toolbar)
+        addItem = binding.toolbar.menu.findItem(R.id.action_add)
+        showSubtitle = binding.toolbar.menu.findItem(R.id.action_show_subtitle)
 
 
         if (savedInstanceState == null) {
@@ -83,11 +79,6 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_add -> {
             permissionLauncherAdd.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            true
-        }
-
-        R.id.action_show_subtitle -> {
-            permissionLauncherShowSub.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             true
         }
 
@@ -202,15 +193,6 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-    private fun onGetPermissionResultShowSub(state: Boolean) {
-        if (state) {
-            //ShowSub
-        } else {
-            askForOpeningSettings()
-        }
-
-    }
-
     private fun updateUI() {
         val fragment = currentFragment
         customTitleCheck(fragment)
@@ -229,10 +211,10 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     private fun customTitleCheck(fragment: Fragment?) {
         if (fragment is ProviderCustomTitle) {
-            binding.actionBar.title = getString(fragment.getTitle())
-            binding.actionBar.isTitleCentered = true
+            binding.toolbar.title = getString(fragment.getTitle())
+            binding.toolbar.isTitleCentered = true
         } else {
-            binding.actionBar.title = ""
+            binding.toolbar.title = ""
         }
     }
 
@@ -258,5 +240,13 @@ class MainActivity : AppCompatActivity(), Navigator {
 
         @JvmStatic
         private val TAG = "MainActivity"
+    }
+
+    override fun hideToolbar(status: Boolean) {
+        if (status) {
+
+        } else {
+
+        }
     }
 }

@@ -35,10 +35,6 @@ class EditCrimeVM @Inject constructor(
     private val _isRemoved = MutableLiveData<Int>()
     val isRemoved = _isRemoved.share()
 
-    init {
-        Log.d(TAG, "state = $state")
-    }
-
     fun setCrime(crime: Crime) {
         if (crime != currentCrime) {
             currentCrime = crime
@@ -100,7 +96,6 @@ class EditCrimeVM @Inject constructor(
         when (event) {
 
             Lifecycle.Event.ON_CREATE -> {
-                Log.d(TAG, currentCrime.toString())
             }
 
             Lifecycle.Event.ON_PAUSE -> {
@@ -108,7 +103,6 @@ class EditCrimeVM @Inject constructor(
                 updateUIState()
             }
             Lifecycle.Event.ON_DESTROY -> {
-                Log.d(TAG, currentCrime.toString())
                 savedStateHandle.set(SAVED_STATE_CRIME, currentCrime)
             }
             else -> {}

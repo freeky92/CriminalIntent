@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -15,10 +16,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.common.utils.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.databinding.CrimesListFragmentBinding
 import com.asurspace.criminalintent.navigation.ProviderCustomTitle
+import com.asurspace.criminalintent.navigation.navigator
 import com.asurspace.criminalintent.presentation.common.CrimesRecyclerAdapter
 import com.asurspace.criminalintent.presentation.ui.MainActivity
 import com.asurspace.criminalintent.presentation.ui.crime.fragment.EditCrimeFragment
@@ -34,6 +37,26 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
         RequestMultiplePermissions(),
         ::onGotPermissionResult
     )
+
+    private var scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                navigator().hideToolbar(false)
+            }
+        }
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            if (dy > 0) {
+                navigator().hideToolbar(true)
+            } else {
+                navigator().hideToolbar(false)
+            }
+
+        }
+
+    }
 
     private val viewModel by viewModels<CrimesListVM>()
 
@@ -70,6 +93,10 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
             this.layoutManager = layoutManager
             this.adapter = crimesAdapter
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.crimeListRv.addOnScrollListener(scrollListener)
+        }
     }
 
     private fun subscribeOnLiveData() {
@@ -93,7 +120,11 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
             }
             moveToItem.observe(viewLifecycleOwner) { event ->
                 event.get()?.let { crime ->
-                    (requireActivity() as MainActivity).openFragment(EditCrimeFragment.newInstance(crime))
+                    (requireActivity() as MainActivity).openFragment(
+                        EditCrimeFragment.newInstance(
+                            crime
+                        )
+                    )
                 }
             }
             openPreview.observe(viewLifecycleOwner) { event ->
@@ -139,9 +170,15 @@ class CrimesListFragment : Fragment(R.layout.crimes_list_fragment), ProviderCust
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.crimeListRv.removeOnScrollListener(scrollListener)
         _binding = null
     }
 
     override fun getTitle() = R.string.crimes_list
+
+    companion object {
+        @JvmStatic
+        private val TAG = "CrimesListFragment"
+    }
 
 }
