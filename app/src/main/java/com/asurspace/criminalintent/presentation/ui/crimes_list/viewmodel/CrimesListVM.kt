@@ -11,8 +11,8 @@ import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.get.GetCrimesListUseCase
 import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
 import com.asurspace.criminalintent.domain.usecase.update.SetSolvedUseCase
-import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.room.entyties.SetSolvedTuples
 import com.asurspace.criminalintent.presentation.ui.state.ErrorModel
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +53,7 @@ class CrimesListVM @Inject constructor(
         viewModelScope.launch {
             _uiState.value = UIState.Pending
             try {
-                getCrimesListUseCase.invoke().collectLatest {
+                getCrimesListUseCase().collectLatest {
                     _uiState.value = UIState.Success(it)
                 }
             } catch (ex: IOException) {

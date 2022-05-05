@@ -1,8 +1,7 @@
 package com.asurspace.criminalintent.presentation.common
 
 import androidx.recyclerview.widget.DiffUtil
-import com.asurspace.criminalintent.model.crimes.entities.Crime
-import kotlin.math.sign
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 
 class CrimesDiffCallback(
     private val oldList: List<Crime>,

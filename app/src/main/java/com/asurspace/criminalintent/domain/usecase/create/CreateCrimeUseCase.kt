@@ -1,7 +1,7 @@
 package com.asurspace.criminalintent.domain.usecase.create
 
 import com.asurspace.criminalintent.domain.repository.GetAddUpdateCrimeRepository
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 import javax.inject.Inject
 
 class CreateCrimeUseCase @Inject constructor(

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.asurspace.criminalintent.R
 import com.asurspace.criminalintent.databinding.RecyclerCrimesItemBinding
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 import com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel.CrimesActionListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy

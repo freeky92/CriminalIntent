@@ -1,9 +1,9 @@
-package com.asurspace.criminalintent.model.crimes.room.entyties
+package com.asurspace.criminalintent.data.model.crimes.room.entyties
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 
 @Entity(
     tableName = "crimes"

@@ -5,8 +5,8 @@ import com.asurspace.criminalintent.data.local.dao.GetCrimesDao
 import com.asurspace.criminalintent.data.local.dao.SearchCrimesDao
 import com.asurspace.criminalintent.data.local.dao.UpdateCrimeDao
 import com.asurspace.criminalintent.domain.repository.GetAddUpdateCrimeRepository
-import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.crimes.room.entyties.SetSolvedTuples
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.room.entyties.SetSolvedTuples
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

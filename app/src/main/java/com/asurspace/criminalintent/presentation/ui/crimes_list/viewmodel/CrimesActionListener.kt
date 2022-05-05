@@ -1,6 +1,6 @@
 package com.asurspace.criminalintent.presentation.ui.crimes_list.viewmodel
 
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 
 interface CrimesActionListener {
 

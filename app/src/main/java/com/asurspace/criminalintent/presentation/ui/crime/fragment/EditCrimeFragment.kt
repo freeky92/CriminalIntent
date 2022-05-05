@@ -23,8 +23,8 @@ import com.asurspace.criminalintent.common.utils.UtilPermissions.PERMISSIONS
 import com.asurspace.criminalintent.common.utils.UtilPermissions.hasPermissions
 import com.asurspace.criminalintent.common.utils.dateFormat
 import com.asurspace.criminalintent.databinding.CrimeFragmentBinding
-import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.CrimeAdditional.emptyCrime
 import com.asurspace.criminalintent.navigation.ProviderCustomTitle
 import com.asurspace.criminalintent.presentation.ui.MainActivity
 import com.asurspace.criminalintent.presentation.ui.crime.viewmodel.EditCrimeVM

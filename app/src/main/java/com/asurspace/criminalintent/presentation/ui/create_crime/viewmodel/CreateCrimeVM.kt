@@ -6,7 +6,7 @@ import androidx.lifecycle.*
 import com.asurspace.criminalintent.common.utils.CrimesTable
 import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.create.CreateCrimeUseCase
-import com.asurspace.criminalintent.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

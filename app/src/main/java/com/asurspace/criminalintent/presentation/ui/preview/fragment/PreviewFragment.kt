@@ -10,9 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.asurspace.criminalintent.common.utils.PREVIEW_FRAGMENT
 import com.asurspace.criminalintent.databinding.FragmentPreviewBinding
-import com.asurspace.criminalintent.model.crimes.entities.Crime
 import com.asurspace.criminalintent.presentation.ui.MainActivity
-import com.asurspace.criminalintent.presentation.ui.crime.fragment.EditCrimeFragment
 
 class PreviewFragment : Fragment() {
 

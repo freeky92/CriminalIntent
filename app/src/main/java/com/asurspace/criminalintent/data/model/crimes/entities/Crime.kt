@@ -1,7 +1,7 @@
-package com.asurspace.criminalintent.model.crimes.entities
+package com.asurspace.criminalintent.data.model.crimes.entities
 
 import android.os.Parcelable
-import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
+import com.asurspace.criminalintent.data.model.crimes.room.entyties.CrimeDbEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

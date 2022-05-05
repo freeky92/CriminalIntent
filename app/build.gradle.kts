@@ -123,8 +123,8 @@ dependencies {
 
     // room
     implementation("androidx.room:room-runtime:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion") // optional, Coroutines & Flows support
+    kapt("androidx.room:room-compiler:$roomVersion")
 
     //glide
     implementation("com.github.bumptech.glide:glide:4.13.1")

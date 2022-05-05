@@ -3,7 +3,7 @@ package com.asurspace.criminalintent.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.asurspace.criminalintent.data.local.dao.*
-import com.asurspace.criminalintent.model.crimes.room.entyties.CrimeDbEntity
+import com.asurspace.criminalintent.data.model.crimes.room.entyties.CrimeDbEntity
 
 @Database(
     version = 1,

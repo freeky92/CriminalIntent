@@ -1,13 +1,12 @@
 package com.asurspace.criminalintent.presentation.ui.crime.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import com.asurspace.criminalintent.common.utils.share
 import com.asurspace.criminalintent.domain.usecase.remove.RemoveCrimeUseCase
 import com.asurspace.criminalintent.domain.usecase.update.UpdateCrimeUseCase
-import com.asurspace.criminalintent.model.crimes.entities.Crime
-import com.asurspace.criminalintent.model.crimes.entities.CrimeAdditional.emptyCrime
+import com.asurspace.criminalintent.data.model.crimes.entities.Crime
+import com.asurspace.criminalintent.data.model.crimes.entities.CrimeAdditional.emptyCrime
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
