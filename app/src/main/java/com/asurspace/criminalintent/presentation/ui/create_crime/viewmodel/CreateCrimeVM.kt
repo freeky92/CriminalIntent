@@ -1,12 +1,11 @@
 package com.asurspace.criminalintent.presentation.ui.create_crime.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import com.asurspace.criminalintent.common.utils.CrimesTable
 import com.asurspace.criminalintent.common.utils.share
-import com.asurspace.criminalintent.domain.usecase.create.CreateCrimeUseCase
 import com.asurspace.criminalintent.data.model.crimes.entities.Crime
+import com.asurspace.criminalintent.domain.usecase.create.CreateCrimeUseCase
 import com.asurspace.criminalintent.presentation.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,29 +102,10 @@ class CreateCrimeVM @Inject constructor(
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                Log.i("create", "CCVM")
-            }
-            Lifecycle.Event.ON_START -> {
-                Log.i("start", "CCVM")
-
-            }
-            Lifecycle.Event.ON_RESUME -> {
-                Log.i("resume", "CCVM")
-
-            }
-            Lifecycle.Event.ON_PAUSE -> {
-                Log.i("pause", "CCVM")
-            }
-            Lifecycle.Event.ON_STOP -> {
-                Log.i("stop", "CCVM")
-            }
             Lifecycle.Event.ON_DESTROY -> {
                 initSSH()
-                Log.i("destroy", "CCVM")
             }
-            Lifecycle.Event.ON_ANY -> {
-            }
+            else -> {return}
         }
     }
 
