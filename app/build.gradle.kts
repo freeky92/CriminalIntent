@@ -34,6 +34,7 @@ android {
                 "proguard-rules.pro"
             )
         }
+
         applicationVariants.all {
             val variant = this
             variant.outputs
@@ -97,7 +98,7 @@ dependencies {
     implementation("com.airbnb.android:lottie:$lottieVersion")
 
     //coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")

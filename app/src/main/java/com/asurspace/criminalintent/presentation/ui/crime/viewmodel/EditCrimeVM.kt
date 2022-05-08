@@ -50,12 +50,6 @@ class EditCrimeVM @Inject constructor(
         }
     }
 
-    private fun update() {
-        viewModelScope.launch {
-            updateCrimeUseCase(currentCrime)
-        }
-    }
-
     fun setSolvedState(state: Boolean) {
         if (currentCrime.solved != state) {
             currentCrime = currentCrime.copy(solved = state)
@@ -87,15 +81,18 @@ class EditCrimeVM @Inject constructor(
         updateUIState()
     }
 
+    private fun update() {
+        viewModelScope.launch {
+            updateCrimeUseCase(currentCrime)
+        }
+    }
+
     private fun updateUIState(){
         _uiState.update { UIState.Success(currentCrime) }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
-
-            Lifecycle.Event.ON_CREATE -> {
-            }
 
             Lifecycle.Event.ON_PAUSE -> {
                 update()
